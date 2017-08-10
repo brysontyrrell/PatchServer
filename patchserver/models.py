@@ -41,7 +41,10 @@ class SoftwareTitle(db.Model):
         order_by='desc(Patch.id)',
         cascade='delete')
 
-    extension_attributes = None
+    extension_attributes = db.relationship(
+        "ExtensionAttribute",
+        back_populates="software_title",
+        cascade='delete')
 
     @property
     def current_version(self):
@@ -73,11 +76,35 @@ class SoftwareTitle(db.Model):
                 criteria.serialize for criteria in self.requirements
             ],
             'patches': [patch.serialize for patch in self.patches],
-            'extensionAttributes': list(),
+            'extensionAttributes': [
+                ext_att.serialize for ext_att in self.extension_attributes
+            ],
             'id': self.id_name
         }
 
 
+class ExtensionAttribute(db.Model):
+    __tablename__ = 'extension_attributes'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    key = db.Column(db.String)
+    value = db.Column(db.Text)
+    display_name = db.Column(db.String)
+
+    software_title_id = db.Column(
+        db.Integer, db.ForeignKey('software_titles.id'))
+
+    software_title = db.relationship(
+        'SoftwareTitle', back_populates='extension_attributes')
+
+    @property
+    def serialize(self):
+        return {
+            'key': self.key,
+            'value': self.value,
+            'displayName': self.display_name
+        }
 
 
 class Patch(db.Model):

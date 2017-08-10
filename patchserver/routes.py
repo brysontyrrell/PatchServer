@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from . import app, db
 from .models import (
     SoftwareTitle,
+    ExtensionAttribute,
     SoftwareTitleCriteria,
     Criteria,
     Patch,
@@ -99,6 +100,10 @@ def title_create():
         create_patch_objects(
             reversed(data['patches']), software_title=new_title)
 
+    if data.get('extensionAttributes'):
+        create_extension_attributes(
+            data['extensionAttributes'], new_title)
+
     db.session.commit()
 
     return flask.jsonify(
@@ -172,6 +177,18 @@ def create_criteria_objects(criteria_list, software_title=None,
             criteria.patch_component = patch_component
 
         db.session.add(criteria)
+
+
+def create_extension_attributes(ext_att_list, software_title):
+    for ext_att in ext_att_list:
+        db.session.add(
+            ExtensionAttribute(
+                key=ext_att['key'],
+                value=ext_att['value'],
+                display_name=ext_att['displayName'],
+                software_title=software_title
+            )
+        )
 
 
 @app.route('/api/v1/title/<name_id>/patches')
