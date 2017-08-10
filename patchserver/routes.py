@@ -13,7 +13,7 @@ from .exc import SoftwareTitleNotFound
 
 @app.route('/')
 def root():
-    return 'Patch Server', 200
+    return flask.render_template('index.html'), 200
 
 
 @app.errorhandler(SoftwareTitleNotFound)
