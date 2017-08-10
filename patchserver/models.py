@@ -1,4 +1,5 @@
 from datetime import datetime
+import hashlib
 
 from sqlalchemy import event
 
@@ -30,9 +31,8 @@ class SoftwareTitle(db.Model):
         db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
 
     requirements = db.relationship(
-        "Criteria",
+        "SoftwareTitleCriteria",
         back_populates="software_title",
-        order_by="desc(Criteria.id)",
         cascade='delete')
 
     patches = db.relationship(
@@ -78,12 +78,6 @@ class SoftwareTitle(db.Model):
         }
 
 
-@event.listens_for(SoftwareTitle.requirements, 'append')
-@event.listens_for(SoftwareTitle.requirements, 'remove')
-@event.listens_for(SoftwareTitle.patches, 'append')
-@event.listens_for(SoftwareTitle.patches, 'remove')
-def software_title_child_update(target, value, initiator):
-    target.last_modified = datetime.utcnow()
 
 
 class Patch(db.Model):
@@ -142,6 +136,26 @@ class Patch(db.Model):
         }
 
 
+class SoftwareTitleCriteria(db.Model):
+    """Association table for linking sets of criteria to a software title."""
+    __tablename__ = 'software_title_criteria'
+
+    title_id = db.Column(
+        db.Integer, db.ForeignKey('software_titles.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    software_title = db.relationship(
+        'SoftwareTitle', back_populates='requirements')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='software_title')
+
+    @property
+    def serialize(self):
+        return self.criteria.serialize
+
+
 class Criteria(db.Model):
     __tablename__ = 'criteria'
 
@@ -153,8 +167,7 @@ class Criteria(db.Model):
     type_ = db.Column(db.String)
     and_ = db.Column(db.Boolean, default=True)
 
-    software_title_id = db.Column(
-        db.Integer, db.ForeignKey('software_titles.id'))
+    hash = db.Column(db.String, unique=True)
 
     patch_id = db.Column(db.Integer, db.ForeignKey('patches.id'))
 
@@ -162,12 +175,23 @@ class Criteria(db.Model):
         db.Integer, db.ForeignKey('patch_components.id'))
 
     software_title = db.relationship(
-        'SoftwareTitle', back_populates='requirements')
+        'SoftwareTitleCriteria', back_populates='criteria')
 
     patch = db.relationship('Patch', back_populates='capabilities')
 
     patch_component = db.relationship(
         'PatchComponent', back_populates='criteria')
+
+    def __init__(self, **kwargs):
+        super(Criteria, self).__init__(**kwargs)
+
+        self.hash = hashlib.sha1(
+            self.name +
+            self.operator +
+            self.value +
+            self.type_ +
+            str(self.and_)
+        ).hexdigest()
 
     @property
     def serialize(self):
@@ -222,3 +246,11 @@ class PatchComponent(db.Model):
                 criteria.serialize for criteria in self.criteria
             ]
         }
+
+
+@event.listens_for(SoftwareTitle.requirements, 'append')
+@event.listens_for(SoftwareTitle.requirements, 'remove')
+@event.listens_for(SoftwareTitle.patches, 'append')
+@event.listens_for(SoftwareTitle.patches, 'remove')
+def software_title_child_update(target, value, initiator):
+    target.last_modified = datetime.utcnow()

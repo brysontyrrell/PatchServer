@@ -1,4 +1,5 @@
 import dateutil.parser
+import hashlib
 
 import flask
 import sqlalchemy
@@ -6,7 +7,12 @@ from sqlalchemy.exc import IntegrityError
 
 from . import app, db
 from .models import (
-    SoftwareTitle, Criteria, Patch, PatchComponent, PatchKillApps
+    SoftwareTitle,
+    SoftwareTitleCriteria,
+    Criteria,
+    Patch,
+    PatchComponent,
+    PatchKillApps
 )
 from .exc import SoftwareTitleNotFound
 
@@ -18,6 +24,7 @@ def root():
 
 @app.errorhandler(SoftwareTitleNotFound)
 def error_title_not_found(err):
+    app.logger.error(err)
     return flask.jsonify({'title_not_found': err.message}), 404
 
 
@@ -82,7 +89,6 @@ def title_create():
         publisher=data['publisher'],
         app_name=data['appName'],
         bundle_id=data['bundleId']
-        # current_version=data['currentVersion']
     )
 
     if data.get('requirements'):
@@ -135,15 +141,31 @@ def create_criteria_objects(criteria_list, software_title=None,
     """
 
     for criterion in criteria_list:
-        criteria = Criteria(
-            name=criterion['name'],
-            operator=criterion['operator'],
-            value=criterion['value'],
-            type_=criterion['type'],
-            and_=criterion.get('and', True)
-        )
+        criteria_hash = hashlib.sha1(
+            criterion['name'] +
+            criterion['operator'] +
+            criterion['value'] +
+            criterion['type'] +
+            str(criterion.get('and', True))
+        ).hexdigest()
+
+        criteria = Criteria.query.filter_by(hash=criteria_hash).first()
+        if not criteria:
+            criteria = Criteria(
+                name=criterion['name'],
+                operator=criterion['operator'],
+                value=criterion['value'],
+                type_=criterion['type'],
+                and_=criterion.get('and', True)
+            )
+
         if software_title:
-            criteria.software_title = software_title
+            db.session.add(
+                SoftwareTitleCriteria(
+                    software_title=software_title,
+                    criteria=criteria
+                )
+            )
         elif patch_object:
             criteria.patch = patch_object
         elif patch_component:
