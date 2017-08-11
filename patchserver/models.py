@@ -211,6 +211,26 @@ class PatchCriteria(db.Model):
         return self.criteria.serialize
 
 
+class PatchCompontentCriteria(db.Model):
+    """Association table for linking sets of criteria to a patch."""
+    __tablename__ = 'patch_component_criteria'
+
+    component_id = db.Column(
+        db.Integer, db.ForeignKey('patch_components.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    patch_component = db.relationship(
+        'PatchComponent', back_populates='criteria')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='patch_component')
+
+    @property
+    def serialize(self):
+        return self.criteria.serialize
+
+
 class Criteria(db.Model):
     __tablename__ = 'criteria'
 
@@ -233,7 +253,7 @@ class Criteria(db.Model):
     patch = db.relationship('PatchCriteria', back_populates='criteria')
 
     patch_component = db.relationship(
-        'PatchComponent', back_populates='criteria')
+        'PatchCompontentCriteria', back_populates='criteria')
 
     def __init__(self, **kwargs):
         super(Criteria, self).__init__(**kwargs)
@@ -288,7 +308,8 @@ class PatchComponent(db.Model):
     patch_id = db.Column(db.Integer, db.ForeignKey('patches.id'))
     patch = db.relationship('Patch', back_populates='components')
 
-    criteria = db.relationship("Criteria", back_populates="patch_component")
+    criteria = db.relationship(
+        "PatchCompontentCriteria", back_populates="patch_component")
 
     @property
     def serialize(self):

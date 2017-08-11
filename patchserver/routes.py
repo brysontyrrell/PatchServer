@@ -7,14 +7,15 @@ from sqlalchemy.exc import IntegrityError
 
 from . import app, db
 from .models import (
-    SoftwareTitle,
-    ExtensionAttribute,
-    SoftwareTitleCriteria,
     Criteria,
+    ExtensionAttribute,
     Patch,
     PatchComponent,
+    PatchCompontentCriteria,
     PatchCriteria,
-    PatchKillApps
+    PatchKillApps,
+    SoftwareTitle,
+    SoftwareTitleCriteria
 )
 from .exc import SoftwareTitleNotFound
 
@@ -180,7 +181,12 @@ def create_criteria_objects(criteria_list, software_title=None,
                 )
             )
         elif patch_component:
-            criteria.patch_component = patch_component
+            db.session.add(
+                PatchCompontentCriteria(
+                    patch_component=patch_component,
+                    criteria=criteria
+                )
+            )
 
         db.session.add(criteria)
 
