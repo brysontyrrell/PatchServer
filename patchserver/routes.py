@@ -13,6 +13,7 @@ from .models import (
     Criteria,
     Patch,
     PatchComponent,
+    PatchCriteria,
     PatchKillApps
 )
 from .exc import SoftwareTitleNotFound
@@ -172,7 +173,12 @@ def create_criteria_objects(criteria_list, software_title=None,
                 )
             )
         elif patch_object:
-            criteria.patch = patch_object
+            db.session.add(
+                PatchCriteria(
+                    patch=patch_object,
+                    criteria=criteria
+                )
+            )
         elif patch_component:
             criteria.patch_component = patch_component
 

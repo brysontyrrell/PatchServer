@@ -2,8 +2,16 @@ from datetime import datetime
 import hashlib
 
 from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from . import db
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 def datetime_to_iso(date):
@@ -136,7 +144,7 @@ class Patch(db.Model):
         cascade='delete')
 
     capabilities = db.relationship(
-        "Criteria",
+        "PatchCriteria",
         back_populates="patch",
         cascade='delete')
 
@@ -183,6 +191,26 @@ class SoftwareTitleCriteria(db.Model):
         return self.criteria.serialize
 
 
+class PatchCriteria(db.Model):
+    """Association table for linking sets of criteria to a patch."""
+    __tablename__ = 'patch_criteria'
+
+    patch_id = db.Column(
+        db.Integer, db.ForeignKey('patches.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    patch = db.relationship(
+        'Patch', back_populates='capabilities')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='patch')
+
+    @property
+    def serialize(self):
+        return self.criteria.serialize
+
+
 class Criteria(db.Model):
     __tablename__ = 'criteria'
 
@@ -196,15 +224,13 @@ class Criteria(db.Model):
 
     hash = db.Column(db.String, unique=True)
 
-    patch_id = db.Column(db.Integer, db.ForeignKey('patches.id'))
-
     patch_component_id = db.Column(
         db.Integer, db.ForeignKey('patch_components.id'))
 
     software_title = db.relationship(
         'SoftwareTitleCriteria', back_populates='criteria')
 
-    patch = db.relationship('Patch', back_populates='capabilities')
+    patch = db.relationship('PatchCriteria', back_populates='criteria')
 
     patch_component = db.relationship(
         'PatchComponent', back_populates='criteria')
