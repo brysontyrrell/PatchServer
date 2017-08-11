@@ -16,7 +16,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody/>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -36,23 +36,34 @@
         {
             type: "GET",
             url: '{{ url_for('software_titles') }}',
-            contentType: "application/json",
             dataType: "json",
             cache: false,
             success: function (data) {
                 data.sort(compare);
-                var table_body = '';
-                $.each(data, function(i, item) {
-                    table_body += '<tr>' +
-                    '<td>' + item.id + '</td>' +
-                    '<td>' + item.name + '</td>' +
-                    '<td>' + item.currentVersion + '</td>' +
-                    '<td>' + item.lastModified + '</td>' +
-                    '<td/>' +
-                    '<td/>' +
-                    '</tr>';
-                });
-                $('#patch-list tbody').html(table_body);
+                if (data.length > 0) {
+                    $.each(data, function (i, item) {
+                        var date = new Date(item.lastModified);
+                        var options = {
+                            weekday: "long", year: "numeric", month: "short",
+                            day: "numeric", hour: "2-digit", minute: "2-digit"
+                        };
+                        var table_row = '<tr id="' + item.id + '">' +
+                            '<td>' + item.id + '</td>' +
+                            '<td>' + item.name + '</td>' +
+                            '<td>' + item.currentVersion + '</td>' +
+                            '<td>' + date.toLocaleString('en-us', options) + '</td>' +
+                            '<td/>' +
+                            '<td/>' +
+                            '</tr>';
+                        $('#patch-list > tbody:last-child').append(table_row);
+                    });
+                } else {
+                    var table_row =
+                        '<tr><td colspan="6">' +
+                        '<h3 style="text-align: center; font-style: italic;">No Patch Definitions Found</h3>' +
+                        '</td></tr>';
+                    $('#patch-list > tbody:last-child').append(table_row);
+                }
             },
 
             error: function (msg) {
