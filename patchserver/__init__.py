@@ -25,6 +25,7 @@ import config
 
 __title__ = 'PatchServer'
 __version__ = '1.0.0'
+__version__ = '1.1.0'
 __author__ = 'Bryson Tyrrell'
 
 app = Flask(__name__)
