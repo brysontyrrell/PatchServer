@@ -96,11 +96,11 @@ def title_create():
 
     if data.get('requirements'):
         create_criteria_objects(
-            reversed(data['requirements']), software_title=new_title)
+            data['requirements'], software_title=new_title)
 
     if data.get('patches'):
         create_patch_objects(
-            reversed(data['patches']), software_title=new_title)
+            list(reversed(data['patches'])), software_title=new_title)
 
     if data.get('extensionAttributes'):
         create_extension_attributes(
@@ -134,7 +134,17 @@ def title_requirements_add(name_id):
     data = flask.request.get_json()
 
     create_criteria_objects(data['items'], software_title=title)
+    db.session.commit()
     return flask.jsonify({}), 201
+
+
+def get_last_index_value(model, model_attribute, filter_arg):
+    result = model.query.with_entities(
+        model.index).filter(
+        getattr(model, model_attribute) == filter_arg).order_by(
+        model.index.desc()).first()
+
+    return result[0] if result else 0
 
 
 def create_criteria_objects(criteria_list, software_title=None,
@@ -167,24 +177,42 @@ def create_criteria_objects(criteria_list, software_title=None,
             )
 
         if software_title:
+            last_index = get_last_index_value(
+                SoftwareTitleCriteria,
+                'software_title',
+                software_title)
+
             db.session.add(
                 SoftwareTitleCriteria(
                     software_title=software_title,
-                    criteria=criteria
+                    criteria=criteria,
+                    index=last_index + 1
                 )
             )
         elif patch_object:
+            last_index = get_last_index_value(
+                PatchCriteria,
+                'patch',
+                patch_object)
+
             db.session.add(
                 PatchCriteria(
                     patch=patch_object,
-                    criteria=criteria
+                    criteria=criteria,
+                    index=last_index + 1
                 )
             )
         elif patch_component:
+            last_index = get_last_index_value(
+                PatchCompontentCriteria,
+                'patch_component',
+                patch_component)
+
             db.session.add(
                 PatchCompontentCriteria(
                     patch_component=patch_component,
-                    criteria=criteria
+                    criteria=criteria,
+                    index=last_index + 1
                 )
             )
 

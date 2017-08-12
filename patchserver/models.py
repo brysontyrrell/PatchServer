@@ -1,8 +1,10 @@
 from datetime import datetime
 import hashlib
+from operator import itemgetter
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
 
 from . import db
 
@@ -23,6 +25,14 @@ def datetime_to_iso(date):
     return date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def sorted_criteria(criteria_list):
+    sorted_list = sorted(criteria_list, key=itemgetter('index'))
+    for item in sorted_list:
+        del(item['index'])
+
+    return sorted_list
+
+
 class SoftwareTitle(db.Model):
     __tablename__ = 'software_titles'
 
@@ -41,18 +51,18 @@ class SoftwareTitle(db.Model):
     requirements = db.relationship(
         "SoftwareTitleCriteria",
         back_populates="software_title",
-        cascade='delete')
+        cascade='all, delete, delete-orphan')
 
     patches = db.relationship(
         "Patch",
         back_populates="software_title",
         order_by='desc(Patch.id)',
-        cascade='delete')
+        cascade='all, delete')
 
     extension_attributes = db.relationship(
         "ExtensionAttribute",
         back_populates="software_title",
-        cascade='delete')
+        cascade='all, delete')
 
     @property
     def current_version(self):
@@ -73,6 +83,9 @@ class SoftwareTitle(db.Model):
 
     @property
     def serialize(self):
+        requirements = [
+                criteria.serialize for criteria in self.requirements
+            ]
         return {
             'name': self.name,
             'publisher': self.publisher,
@@ -80,9 +93,7 @@ class SoftwareTitle(db.Model):
             'bundleId': self.bundle_id,
             'lastModified': datetime_to_iso(self.last_modified),
             'currentVersion': self.current_version,
-            'requirements': [
-                criteria.serialize for criteria in self.requirements
-            ],
+            'requirements': sorted_criteria(requirements),
             'patches': [patch.serialize for patch in self.patches],
             'extensionAttributes': [
                 ext_att.serialize for ext_att in self.extension_attributes
@@ -136,17 +147,17 @@ class Patch(db.Model):
     kill_apps = db.relationship(
         "PatchKillApps",
         back_populates="patch",
-        cascade='delete')
+        cascade='all, delete')
 
     components = db.relationship(
         "PatchComponent",
         back_populates="patch",
-        cascade='delete')
+        cascade='all, delete')
 
     capabilities = db.relationship(
         "PatchCriteria",
         back_populates="patch",
-        cascade='delete')
+        cascade='all, delete, delete-orphan')
 
     dependencies = None  # Not used
 
@@ -168,112 +179,6 @@ class Patch(db.Model):
                 criteria.serialize for criteria in self.capabilities
             ],
             'dependencies': []
-        }
-
-
-class SoftwareTitleCriteria(db.Model):
-    """Association table for linking sets of criteria to a software title."""
-    __tablename__ = 'software_title_criteria'
-
-    title_id = db.Column(
-        db.Integer, db.ForeignKey('software_titles.id'), primary_key=True)
-    criteria_id = db.Column(
-        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
-
-    software_title = db.relationship(
-        'SoftwareTitle', back_populates='requirements')
-
-    criteria = db.relationship(
-        'Criteria', back_populates='software_title')
-
-    @property
-    def serialize(self):
-        return self.criteria.serialize
-
-
-class PatchCriteria(db.Model):
-    """Association table for linking sets of criteria to a patch."""
-    __tablename__ = 'patch_criteria'
-
-    patch_id = db.Column(
-        db.Integer, db.ForeignKey('patches.id'), primary_key=True)
-    criteria_id = db.Column(
-        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
-
-    patch = db.relationship(
-        'Patch', back_populates='capabilities')
-
-    criteria = db.relationship(
-        'Criteria', back_populates='patch')
-
-    @property
-    def serialize(self):
-        return self.criteria.serialize
-
-
-class PatchCompontentCriteria(db.Model):
-    """Association table for linking sets of criteria to a patch."""
-    __tablename__ = 'patch_component_criteria'
-
-    component_id = db.Column(
-        db.Integer, db.ForeignKey('patch_components.id'), primary_key=True)
-    criteria_id = db.Column(
-        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
-
-    patch_component = db.relationship(
-        'PatchComponent', back_populates='criteria')
-
-    criteria = db.relationship(
-        'Criteria', back_populates='patch_component')
-
-    @property
-    def serialize(self):
-        return self.criteria.serialize
-
-
-class Criteria(db.Model):
-    __tablename__ = 'criteria'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.String)
-    operator = db.Column(db.String)
-    value = db.Column(db.String)
-    type_ = db.Column(db.String)
-    and_ = db.Column(db.Boolean, default=True)
-
-    hash = db.Column(db.String, unique=True)
-
-    patch_component_id = db.Column(
-        db.Integer, db.ForeignKey('patch_components.id'))
-
-    software_title = db.relationship(
-        'SoftwareTitleCriteria', back_populates='criteria')
-
-    patch = db.relationship('PatchCriteria', back_populates='criteria')
-
-    patch_component = db.relationship(
-        'PatchCompontentCriteria', back_populates='criteria')
-
-    def __init__(self, **kwargs):
-        super(Criteria, self).__init__(**kwargs)
-
-        self.hash = hashlib.sha1(
-            self.name +
-            self.operator +
-            self.value +
-            self.type_ +
-            str(self.and_)
-        ).hexdigest()
-
-    @property
-    def serialize(self):
-        return {
-            'name': self.name,
-            'operator': self.operator,
-            'value': self.value,
-            'type': self.type_,
-            'and': self.and_
         }
 
 
@@ -309,7 +214,9 @@ class PatchComponent(db.Model):
     patch = db.relationship('Patch', back_populates='components')
 
     criteria = db.relationship(
-        "PatchCompontentCriteria", back_populates="patch_component")
+        "PatchCompontentCriteria",
+        back_populates="patch_component",
+        cascade='all, delete, delete-orphan')
 
     @property
     def serialize(self):
@@ -322,9 +229,148 @@ class PatchComponent(db.Model):
         }
 
 
+class Criteria(db.Model):
+    __tablename__ = 'criteria'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String)
+    operator = db.Column(db.String)
+    value = db.Column(db.String)
+    type_ = db.Column(db.String)
+    and_ = db.Column(db.Boolean, default=True)
+
+    hash = db.Column(db.String, unique=True)
+
+    software_title = db.relationship(
+        'SoftwareTitleCriteria', back_populates='criteria')
+
+    patch = db.relationship('PatchCriteria', back_populates='criteria')
+
+    patch_component = db.relationship(
+        'PatchCompontentCriteria', back_populates='criteria')
+
+    def __init__(self, **kwargs):
+        super(Criteria, self).__init__(**kwargs)
+
+        self.hash = hashlib.sha1(
+            self.name +
+            self.operator +
+            self.value +
+            self.type_ +
+            str(self.and_)
+        ).hexdigest()
+
+    @property
+    def orphaned(self):
+        if (
+            len(self.software_title) +
+            len(self.patch) +
+            len(self.patch_component)
+        ) == 0:
+            return True
+        else:
+            return False
+
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'operator': self.operator,
+            'value': self.value,
+            'type': self.type_,
+            'and': self.and_
+        }
+
+
+class SoftwareTitleCriteria(db.Model):
+    """Association table for linking sets of criteria to a software title."""
+    __tablename__ = 'software_title_criteria'
+
+    title_id = db.Column(
+        db.Integer, db.ForeignKey('software_titles.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    index = db.Column(db.Integer)
+
+    software_title = db.relationship(
+        'SoftwareTitle', back_populates='requirements')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='software_title')
+
+    @property
+    def serialize(self):
+        data = self.criteria.serialize
+        data['index'] = self.index
+        return data
+
+
+class PatchCriteria(db.Model):
+    """Association table for linking sets of criteria to a patch."""
+    __tablename__ = 'patch_criteria'
+
+    patch_id = db.Column(
+        db.Integer, db.ForeignKey('patches.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    index = db.Column(db.Integer)
+
+    patch = db.relationship(
+        'Patch', back_populates='capabilities')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='patch')
+
+    @property
+    def serialize(self):
+        return self.criteria.serialize
+
+
+class PatchCompontentCriteria(db.Model):
+    """Association table for linking sets of criteria to a patch."""
+    __tablename__ = 'patch_component_criteria'
+
+    component_id = db.Column(
+        db.Integer, db.ForeignKey('patch_components.id'), primary_key=True)
+    criteria_id = db.Column(
+        db.Integer, db.ForeignKey('criteria.id'), primary_key=True)
+
+    index = db.Column(db.Integer)
+
+    patch_component = db.relationship(
+        'PatchComponent', back_populates='criteria')
+
+    criteria = db.relationship(
+        'Criteria', back_populates='patch_component')
+
+    @property
+    def serialize(self):
+        return self.criteria.serialize
+
+
 @event.listens_for(SoftwareTitle.requirements, 'append')
 @event.listens_for(SoftwareTitle.requirements, 'remove')
 @event.listens_for(SoftwareTitle.patches, 'append')
 @event.listens_for(SoftwareTitle.patches, 'remove')
+@event.listens_for(SoftwareTitle.requirements, 'append')
+@event.listens_for(SoftwareTitle.requirements, 'remove')
 def software_title_child_update(target, value, initiator):
     target.last_modified = datetime.utcnow()
+
+
+@event.listens_for(Session, 'after_flush')
+def delete_ophaned_criteria(session, ctx):
+    check = False
+
+    for instance in session.deleted:
+        if isinstance(instance, (SoftwareTitle, Patch, PatchComponent)):
+            check = True
+
+    if check:
+        session.query(Criteria).filter(
+            ~Criteria.software_title.any(),
+            ~Criteria.patch.any(),
+            ~Criteria.patch_component.any()).delete(synchronize_session=False)
