@@ -18,14 +18,15 @@
 /api/v1/title/<Name>/patches/add - POST Add patch versions onto a title
 """
 
+import logging
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 import config
 
 __title__ = 'PatchServer'
-__version__ = '1.0.0'
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 __author__ = 'Bryson Tyrrell'
 
 app = Flask(__name__)
@@ -33,6 +34,15 @@ app = Flask(__name__)
 app.config.from_object(config)
 
 db = SQLAlchemy(app)
+
+sql_logger = logging.getLogger('sqlalchemy.engine')
+sql_logger.setLevel(logging.INFO)
+
+# if app.config.get('DEBUG'):
+#     sql_logger.setLevel(logging.DEBUG)
+
+for handler in app.logger.handlers:
+    sql_logger.addHandler(handler)
 
 import models
 import routes

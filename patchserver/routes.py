@@ -1,11 +1,13 @@
 import dateutil.parser
 import hashlib
+from urlparse import urljoin
 
 import flask
 import sqlalchemy
 from sqlalchemy.exc import IntegrityError
+from werkzeug.contrib.atom import AtomFeed
 
-from . import app, db
+from . import __version__, app, db
 from .models import (
     Criteria,
     ExtensionAttribute,
@@ -23,6 +25,31 @@ from .exc import SoftwareTitleNotFound
 @app.route('/')
 def root():
     return flask.render_template('index.html'), 200
+
+
+@app.route('/rss')
+def rss_feed():
+    feed = AtomFeed(
+        'Patch Server Software Titles',
+        feed_url=flask.request.url,
+        url=flask.request.url_root,
+        generator=('Patch Server', None, __version__))
+
+    titles = SoftwareTitle.query.all()
+
+    for title in titles:
+        feed.add(
+            title=title.name,
+            author=title.publisher,
+            content='<b>Version:</b> {} '
+                    '<b>| App Name:</b> {} '
+                    '<b>| Bundle ID:</b> {}'.format(
+                        title.current_version, title.app_name, title.bundle_id),
+            url=flask.url_for(
+                'patch_by_name_id', name_id=title.id_name, _external=True),
+            updated=title.last_modified)
+
+    return feed.get_response()
 
 
 @app.errorhandler(SoftwareTitleNotFound)
