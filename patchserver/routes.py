@@ -120,6 +120,7 @@ def title_create():
         app_name=data['appName'],
         bundle_id=data['bundleId']
     )
+    db.session.add(new_title)
 
     if data.get('requirements'):
         create_criteria_objects(
