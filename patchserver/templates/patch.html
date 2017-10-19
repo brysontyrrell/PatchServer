@@ -11,7 +11,7 @@
             </ol>
 
             <div class="table-responsive">
-                <table class="table table-striped" id="about-patch">
+                <table class="table table-striped" id="patch-about">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -22,6 +22,56 @@
                             <th>Bundle ID</th>
                             <th>Extension Attribute?</th>
                             <th>Last Modified</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h3>
+                <span>Device Eligibility Criteria</span>
+                <button class="btn-primary btn-xs pull-right" onclick="window.location.href='#'">
+                    Add <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </h3>
+
+            <div class="table-responsive">
+                <table class="table table-striped" id="patch-eligibility">
+                    <thead>
+                        <tr>
+                            <th>And?</th>
+                            <th>Criteria</th>
+                            <th>Operator</th>
+                            <th>Value</th>
+                            <th>Type</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h3>
+                <span>Patch Versions</span>
+                <button class="btn-primary btn-xs pull-right" onclick="window.location.href='#'">
+                    Add <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </h3>
+
+            <div class="table-responsive">
+                <table class="table table-striped" id="patch-versions">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Version</th>
+                            <th>Release Date</th>
+                            <th>Minimum OS</th>
+                            <th>Requires Reboot?</th>
+                            <th>Standalone?</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -37,34 +87,107 @@
         return results[1] || 0;
     };
 
+    $.updatePatchAbout = function (data) {
+        var date = new Date(data.lastModified);
+        var options = {
+            weekday: "long", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+        var table_row = '<tr id="' + data.id + '">' +
+            '<td>' + data.name + '</td>' +
+            '<td>' + data.id + '</td>' +
+            '<td>' + data.publisher + '</td>' +
+            '<td>' + data.currentVersion + '</td>' +
+            '<td>' + data.appName + '</td>' +
+            '<td>' + data.bundleId + '</td>' +
+            '<td/>' +
+            '<td>' + date.toLocaleString('en-us', options) + '</td>' +
+            '<td>' +
+            '    <button class="btn-primary btn-xs pull-right" onclick="window.location.href=\'#\'">' +
+            '        <span class="glyphicon glyphicon-pencil"></span>' +
+            '    </button>' +
+            '</td>' +
+            '</tr>';
+        $('#patch-about > tbody:last-child').append(table_row);
+    };
+
+    $.updatePatchEligibility = function (data) {
+        var requirements = data.requirements;
+        if (requirements.length > 0) {
+            $.each(requirements, function (i, item) {
+                var table_row = '<tr id="' + item.id + '">' +
+                    '<td>' + item.and + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td>' + item.operator + '</td>' +
+                    '<td>' + item.value + '</td>' +
+                    '<td>' + item.type + '</td>' +
+                    '<td>' +
+                    '    <button class="btn-danger btn-xs pull-right" onclick="window.location.href=\'#\'">' +
+                    '        <span class="glyphicon glyphicon-remove"></span>' +
+                    '    </button>' +
+                    '</td>' +
+                    '</tr>';
+                $('#patch-eligibility > tbody:last-child').append(table_row);
+            });
+        }
+    };
+
+    $.updatePatchVersions = function (data) {
+        var patches = data.patches;
+        if (patches.length > 0) {
+            var options = {
+                weekday: "long", year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
+            $.each(patches, function (i, item) {
+                var date = new Date(item.releaseDate);
+                var table_row = '<tr id="' + item.id + '">' +
+                    '<td>' +
+                    '    <button class="btn-info btn-xs" onclick="window.location.href=\'#\'">' +
+                    '        <span class="glyphicon glyphicon-eye-open"></span>' +
+                    '    </button>' +
+                    '</td>' +
+                    '<td>' + item.version + '</td>' +
+                    '<td>' + date.toLocaleString('en-us', options) + '</td>' +
+                    '<td>' + item.minimumOperatingSystem + '</td>' +
+                    '<td>' + item.reboot + '</td>' +
+                    '<td>' + item.standalone + '</td>' +
+                    '<td>' +
+                    '    <button class="btn-danger btn-xs" onclick="window.location.href=\'#\'">' +
+                    '        <span class="glyphicon glyphicon-remove"></span>' +
+                    '    </button>' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button class="btn-success btn-xs" onclick="window.location.href=\'#\'">' +
+                    '        <span class="glyphicon glyphicon-chevron-up"></span>' +
+                    '    </button>' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button class="btn-warning btn-xs" onclick="window.location.href=\'#\'">' +
+                    '        <span class="glyphicon glyphicon-chevron-down"></span>' +
+                    '    </button>' +
+                    '</td>' +
+                    '</tr>';
+                $('#patch-versions > tbody:last-child').append(table_row);
+            });
+        }
+    };
+
     $(document).ready(function() {
         var patchId = $.urlParam('id');
         $.ajax(
         {
             type: "GET",
-            url: '{{ url_for('patch_by_name_id', name_id="") }}' + patchId,
+            url: '../jamf/v1/patch/' + patchId,
             dataType: "json",
             cache: false,
             success: function (data) {
-                var date = new Date(data.lastModified);
-                var options = {
-                    weekday: "long", year: "numeric", month: "short",
-                    day: "numeric", hour: "2-digit", minute: "2-digit"
-                };
-                var table_row = '<tr id="' + data.id + '">' +
-                    '<td>' + data.name + '</td>' +
-                    '<td>' + data.id + '</td>' +
-                    '<td>' + data.publisher + '</td>' +
-                    '<td>' + data.currentVersion + '</td>' +
-                    '<td>' + data.appName + '</td>' +
-                    '<td>' + data.bundleId + '</td>' +
-                    '<td/>' +
-                    '<td>' + date.toLocaleString('en-us', options) + '</td>' +
-                    '</tr>';
-                $('#about-patch > tbody:last-child').append(table_row);
+                $.updatePatchAbout(data);
+                $.updatePatchEligibility(data);
+                $.updatePatchVersions(data)
             }
         });
-    })
+    });
     </script>
 
 {% endblock %}
