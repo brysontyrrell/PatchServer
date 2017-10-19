@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block body_content %}
+
+    <div class="container-fluid">
+        <div class="col-md-12 main">
+            <h2>Patch Title: {{ patch_title }}</h2>
+
+            <ol class="breadcrumb">
+                <li><a href="/">Home</a></li>
+                <li class="current">{{ patch_title }}</li>
+            </ol>
+
+            <div class="table-responsive">
+                <table class="table table-striped" id="about-patch">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Patch ID</th>
+                            <th>Publisher</th>
+                            <th>Current Version</th>
+                            <th>App</th>
+                            <th>Bundle ID</th>
+                            <th>Extension Attribute?</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    $.urlParam = function(name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        return results[1] || 0;
+    };
+
+    $(document).ready(function() {
+        var patchId = $.urlParam('id');
+        $.ajax(
+        {
+            type: "GET",
+            url: '{{ url_for('patch_by_name_id', name_id="") }}' + patchId,
+            dataType: "json",
+            cache: false,
+            success: function (data) {
+                var date = new Date(data.lastModified);
+                var options = {
+                    weekday: "long", year: "numeric", month: "short",
+                    day: "numeric", hour: "2-digit", minute: "2-digit"
+                };
+                var table_row = '<tr id="' + data.id + '">' +
+                    '<td>' + data.name + '</td>' +
+                    '<td>' + data.id + '</td>' +
+                    '<td>' + data.publisher + '</td>' +
+                    '<td>' + data.currentVersion + '</td>' +
+                    '<td>' + data.appName + '</td>' +
+                    '<td>' + data.bundleId + '</td>' +
+                    '<td/>' +
+                    '<td>' + date.toLocaleString('en-us', options) + '</td>' +
+                    '</tr>';
+                $('#about-patch > tbody:last-child').append(table_row);
+            }
+        });
+    })
+    </script>
+
+{% endblock %}

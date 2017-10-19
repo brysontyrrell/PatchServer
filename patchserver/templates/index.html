@@ -3,16 +3,22 @@
 
     <div class="container-fluid">
         <div class="col-md-12 main">
-            <h1>Patches</h1>
+            <h2>Patch Titles</h2>
+
+            <ol class="breadcrumb">
+                <li><a href="/">Home</a></li>
+            </ol>
+
             <div class="table-responsive">
                 <table class="table table-striped" id="patch-list">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Latest Version</th>
-                            <th>Last Modified</th>
                             <th></th>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Patch ID</th>
+                            <th>Current Version</th>
+                            <th>Last Modified</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -31,7 +37,7 @@
         return 0;
     }
 
-    $(document).ready(function(){
+    $(document).ready(function() {
         $.ajax(
         {
             type: "GET",
@@ -48,11 +54,16 @@
                             day: "numeric", hour: "2-digit", minute: "2-digit"
                         };
                         var table_row = '<tr id="' + item.id + '">' +
-                            '<td>' + item.id + '</td>' +
+                            '<td/>' +
+                            '<td>' +
+                            '    <button class="btn-info btn-xs" onclick="window.location.href=\'/patch?id=' +  item.id + '\'">' +
+                            '        <span class="glyphicon glyphicon-eye-open"></span>' +
+                            '    </button>' +
+                            '</td>' +
                             '<td>' + item.name + '</td>' +
+                            '<td>' + item.id + '</td>' +
                             '<td>' + item.currentVersion + '</td>' +
                             '<td>' + date.toLocaleString('en-us', options) + '</td>' +
-                            '<td/>' +
                             '<td/>' +
                             '</tr>';
                         $('#patch-list > tbody:last-child').append(table_row);

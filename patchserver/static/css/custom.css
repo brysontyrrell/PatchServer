@@ -1,0 +1,12 @@
+ol.breadcrumb {
+    list-style: none;
+    background-color: transparent;
+}
+
+ol.breadcrumb li {
+    display: inline;
+}
+
+ol.breadcrumb li+li:before {
+    content:"» ";
+}

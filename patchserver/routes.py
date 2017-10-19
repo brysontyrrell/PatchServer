@@ -23,8 +23,18 @@ from .exc import SoftwareTitleNotFound
 
 
 @app.route('/')
-def root():
+def ui_root():
     return flask.render_template('index.html'), 200
+
+
+@app.route('/patch')
+def ui_patch():
+    patch_title = flask.request.args.get('id')
+    flask.current_app.logger.debug(patch_title)
+    if not patch_title:
+        flask.abort(404)
+
+    return flask.render_template('patch.html', patch_title=patch_title), 200
 
 
 @app.route('/rss')
