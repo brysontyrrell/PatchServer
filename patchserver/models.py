@@ -46,7 +46,7 @@ class SoftwareTitle(db.Model):
     bundle_id = db.Column(db.String)
 
     last_modified = db.Column(
-        db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     requirements = db.relationship(
         "SoftwareTitleCriteria",

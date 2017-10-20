@@ -39,7 +39,7 @@ def ui_patch():
 
 @app.route('/patch/add')
 def ui_add_patch():
-    return flask.render_template('actions/new_patch.html'), 200
+    return flask.render_template('actions/new_title.html'), 200
 
 
 @app.route('/rss')
