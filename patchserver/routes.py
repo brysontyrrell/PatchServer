@@ -37,6 +37,11 @@ def ui_patch():
     return flask.render_template('patch.html', patch_title=patch_title), 200
 
 
+@app.route('/patch/add')
+def ui_add_patch():
+    return flask.render_template('actions/new_patch.html'), 200
+
+
 @app.route('/rss')
 def rss_feed():
     feed = AtomFeed(

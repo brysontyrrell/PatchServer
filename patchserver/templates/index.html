@@ -3,16 +3,21 @@
 
     <div class="container-fluid">
         <div class="col-md-12 main">
-            <h2>Patch Titles</h2>
+            <h2>
+                <span>Patch Titles</span>
+                <button class="btn-primary btn-xs pull-right" onclick="window.location.href='../patch/add'">
+                    Add <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </h2>
 
             <div class="table-responsive">
                 <table class="table table-striped" id="patch-list">
                     <thead>
                         <tr>
                             <th></th>
-                            <th></th>
-                            <th>Name</th>
                             <th>Patch ID</th>
+                            <th>Name</th>
+                            <th>Publisher</th>
                             <th>Current Version</th>
                             <th>Last Modified</th>
                             <th></th>
@@ -50,14 +55,14 @@
                             day: "numeric", hour: "2-digit", minute: "2-digit"
                         };
                         var table_row = '<tr id="' + item.id + '">' +
-                            '<td/>' +
                             '<td>' +
                             '    <button class="btn-info btn-xs" onclick="window.location.href=\'/patch?id=' +  item.id + '\'">' +
                             '        <span class="glyphicon glyphicon-eye-open"></span>' +
                             '    </button>' +
                             '</td>' +
-                            '<td>' + item.name + '</td>' +
                             '<td>' + item.id + '</td>' +
+                            '<td>' + item.name + '</td>' +
+                            '<td>' + item.publisher + '</td>' +
                             '<td>' + item.currentVersion + '</td>' +
                             '<td>' + date.toLocaleString('en-us', options) + '</td>' +
                             '<td/>' +
@@ -66,7 +71,7 @@
                     });
                 } else {
                     var table_row =
-                        '<tr><td colspan="6">' +
+                        '<tr><td colspan="7">' +
                         '<h3 style="text-align: center; font-style: italic;">No Patch Definitions Found</h3>' +
                         '</td></tr>';
                     $('#patch-list > tbody:last-child').append(table_row);

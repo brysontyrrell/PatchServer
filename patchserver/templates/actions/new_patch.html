@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block body_content %}
+
+    <div class="container-fluid">
+        <div class="col-md-12 main">
+            <h2>Patch Titles</h2>
+
+            <ol class="breadcrumb">
+                <li><a href="/">Home</a></li>
+                <li class="current">Add Patch Title</li>
+            </ol>
+
+            <form class="col-md-4 col-sm-6" id="addPatchForm">
+                <div class="form-group">
+                    <label for="patch_id">Patch ID</label>
+                    <input type="text" class="form-control" id="patch_id" name="id" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="patch_name">Name</label>
+                    <input type="text" class="form-control" id="patch_name" name="name" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="patch_pub">Publisher</label>
+                    <input type="text" class="form-control" id="patch_pub" name="publisher" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="patch_app">App</label>
+                    <input type="text" class="form-control" id="patch_app" name="appName" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="patch_bundleid">Bundle ID</label>
+                    <input type="text" class="form-control" id="patch_bundleid" name="bundleId" required/>
+                </div>
+
+                <div class="form-group pull-right">
+                    <button class="btn btn-danger" onclick="window.location.href='../'">Cancel</button>
+                    <button class="btn btn-primary" type="submit" id="addPatchFormSubmit">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function () {
+        var registerForm = $('#addPatchForm');
+
+        registerForm.on('submit', function (event) {
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+            var jsonData = ConvertFormToJSON(registerForm);
+            $("#addPatchFormSubmit").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                url: "../api/v1/title/create",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(jsonData),
+                cache: false,
+                success: function (data) {
+                    console.log("SUCCESS: ", data);
+                    window.location.href = '../';
+                },
+                error: function (e) {
+                    console.log("ERROR: ", e);
+                    console.log("ERROR MSG: ", e.responseText);
+                    window.location.href = '../';
+                }
+            });
+        });
+    });
+    </script>
+
+{% endblock %}
