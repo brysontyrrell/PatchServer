@@ -30,59 +30,7 @@
     </div>
 
     <script>
-    function compare(a,b) {
-        if (a.id < b.id)
-            return -1;
-        if (a.id > b.id)
-            return 1;
-        return 0;
-    }
-
-    $(document).ready(function() {
-        $.ajax(
-        {
-            type: "GET",
-            url: '{{ url_for('software_titles') }}',
-            dataType: "json",
-            cache: false,
-            success: function (data) {
-                data.sort(compare);
-                if (data.length > 0) {
-                    $.each(data, function (i, item) {
-                        var date = new Date(item.lastModified);
-                        var options = {
-                            weekday: "long", year: "numeric", month: "short",
-                            day: "numeric", hour: "2-digit", minute: "2-digit"
-                        };
-                        var table_row = '<tr id="' + item.id + '">' +
-                            '<td>' +
-                            '    <button class="btn-info btn-xs" onclick="window.location.href=\'/patch?id=' +  item.id + '\'">' +
-                            '        <span class="glyphicon glyphicon-eye-open"></span>' +
-                            '    </button>' +
-                            '</td>' +
-                            '<td>' + item.id + '</td>' +
-                            '<td>' + item.name + '</td>' +
-                            '<td>' + item.publisher + '</td>' +
-                            '<td>' + item.currentVersion + '</td>' +
-                            '<td>' + date.toLocaleString('en-us', options) + '</td>' +
-                            '<td/>' +
-                            '</tr>';
-                        $('#patch-list > tbody:last-child').append(table_row);
-                    });
-                } else {
-                    var table_row =
-                        '<tr><td colspan="7">' +
-                        '<h3 style="text-align: center; font-style: italic;">No Patch Definitions Found</h3>' +
-                        '</td></tr>';
-                    $('#patch-list > tbody:last-child').append(table_row);
-                }
-            },
-
-            error: function (msg) {
-                alert(msg.responseText);
-            }
-        });
-    })
+        $(document).ready(indexPatchList);
     </script>
 
 {% endblock %}

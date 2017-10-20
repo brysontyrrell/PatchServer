@@ -38,42 +38,11 @@
 
                 <div class="form-group pull-right">
                     <button class="btn btn-danger" onclick="window.location.href='../'">Cancel</button>
-                    <button class="btn btn-primary" type="submit" id="addPatchFormSubmit">Save</button>
+                    <button class="btn btn-primary" onclick="indexAddPatch()" id="addPatchFormSubmit">Save</button>
                 </div>
             </form>
 
         </div>
     </div>
-
-    <script>
-    $(document).ready(function () {
-        var registerForm = $('#addPatchForm');
-
-        registerForm.on('submit', function (event) {
-            //stop submit the form, we will post it manually.
-            event.preventDefault();
-            var jsonData = ConvertFormToJSON(registerForm);
-            $("#addPatchFormSubmit").prop("disabled", true);
-
-            $.ajax({
-                type: "POST",
-                url: "../api/v1/title/create",
-                dataType: 'json',
-                contentType: "application/json",
-                data: JSON.stringify(jsonData),
-                cache: false,
-                success: function (data) {
-                    console.log("SUCCESS: ", data);
-                    window.location.href = '../';
-                },
-                error: function (e) {
-                    console.log("ERROR: ", e);
-                    console.log("ERROR MSG: ", e.responseText);
-                    window.location.href = '../';
-                }
-            });
-        });
-    });
-    </script>
 
 {% endblock %}
