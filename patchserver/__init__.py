@@ -35,12 +35,14 @@ app.config.from_object(config)
 
 db = SQLAlchemy(app)
 
-if app.config.get('DEBUG'):
+if app.config.get('SQL_LOGGING'):
     sql_logger = logging.getLogger('sqlalchemy.engine')
-    sql_logger.setLevel(logging.DEBUG)
 
     for handler in app.logger.handlers:
         sql_logger.addHandler(handler)
+
+    if app.config.get('DEBUG'):
+        sql_logger.setLevel(logging.DEBUG)
 
 import models
 import routes
