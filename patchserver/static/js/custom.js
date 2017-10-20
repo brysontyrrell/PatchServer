@@ -57,7 +57,9 @@ function ConvertTimestamp(timestamp) {
 }
 
 
-//Functions for index.html
+/**
+ * Functions for index.html
+ */
 function indexPatchList() {
 	$.ajax(
 	{
@@ -74,7 +76,7 @@ function indexPatchList() {
 						weekday: "long", year: "numeric", month: "short",
 						day: "numeric", hour: "2-digit", minute: "2-digit"
 					};
-					var table_row = '<tr id="' + item.id + '">' +
+					var table_row = '<tr>' +
 						'<td>' +
 						'    <button class="btn-info btn-xs" onclick="window.location.href=\'../patch?id=' +  item.id + '\'">' +
 						'        <span class="glyphicon glyphicon-eye-open"></span>' +
@@ -85,10 +87,11 @@ function indexPatchList() {
 						'<td>' + item.publisher + '</td>' +
 						'<td>' + item.currentVersion + '</td>' +
 						'<td>' + date.toLocaleString('en-us', options) + '</td>' +
-						'<td>' +
-						'    <button class="btn-danger btn-xs" onclick="window.location.href=\'#\'">' +
+                        '<td>' +
+						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeletePatch(this.id)">' +
 						'        <span class="glyphicon glyphicon-remove"></span>' +
 						'    </button>' +
+                        '</td>' +
 						'</tr>';
 					$('#patch-list > tbody:last-child').append(table_row);
 				});
@@ -119,7 +122,7 @@ function indexAddPatch() {
 
 		$.ajax({
 			type: "POST",
-			url: "../api/v1/title/create",
+			url: "../api/v1/title",
 			dataType: 'json',
 			contentType: "application/json",
 			data: JSON.stringify(jsonData),
@@ -138,7 +141,26 @@ function indexAddPatch() {
 }
 
 
-//Functions for patch.html
+function indexDeletePatch(name_id) {
+    $.ajax({
+        type: 'DELETE',
+        url: "../api/v1/title/" + name_id,
+        cache: false,
+        success: function (data) {
+            window.location.href = '../';
+        },
+        error: function (e) {
+            console.log("ERROR: ", e);
+            console.log("ERROR MSG: ", e.responseText);
+            window.location.href = '../';
+        }
+    });
+}
+
+
+/**
+ * Functions for patch.html
+ */
 function viewPatchLoad() {
 	var patchId = urlParam('id');
 	$.ajax(
@@ -162,7 +184,7 @@ function updatePatchAbout(data) {
 		weekday: "long", year: "numeric", month: "short",
 		day: "numeric", hour: "2-digit", minute: "2-digit"
 	};
-	var table_row = '<tr id="' + data.id + '">' +
+	var table_row = '<tr>' +
 		'<td>' + data.name + '</td>' +
 		'<td>' + data.id + '</td>' +
 		'<td>' + data.publisher + '</td>' +
@@ -185,7 +207,7 @@ function updatePatchEligibility(data) {
 	var requirements = data.requirements;
 	if (requirements.length > 0) {
 		$.each(requirements, function (i, item) {
-			var table_row = '<tr id="' + item.id + '">' +
+			var table_row = '<tr>' +
 				'<td>' + item.and + '</td>' +
 				'<td>' + item.name + '</td>' +
 				'<td>' + item.operator + '</td>' +
@@ -212,7 +234,7 @@ function updatePatchVersions(data) {
 		};
 		$.each(patches, function (i, item) {
 			var date = new Date(item.releaseDate);
-			var table_row = '<tr id="' + item.id + '">' +
+			var table_row = '<tr>' +
 				'<td>' +
 				'    <button class="btn-info btn-xs" onclick="window.location.href=\'#\'">' +
 				'        <span class="glyphicon glyphicon-eye-open"></span>' +

@@ -123,7 +123,7 @@ def patch_by_name_id(name_id):
     return flask.jsonify(lookup_software_title(name_id).serialize), 200
 
 
-@app.route('/api/v1/title/create', methods=['POST'])
+@app.route('/api/v1/title', methods=['POST'])
 def title_create():
     """Create a new Patch Software Title"""
     data = flask.request.get_json()
@@ -155,13 +155,14 @@ def title_create():
         {'id': new_title.id_name, 'database_id': new_title.id}), 201
 
 
-@app.route('/api/v1/title/<name_id>/delete', methods=['DELETE'])
+@app.route('/api/v1/title/<name_id>', methods=['DELETE'])
 def title_delete(name_id):
     """Delete a Patch Software Title"""
-    title = lookup_software_title(name_id)
-    db.session.delete(title)
-    db.session.commit()
-    return flask.jsonify({}), 204
+    if flask.request.method == 'DELETE':
+        title = lookup_software_title(name_id)
+        db.session.delete(title)
+        db.session.commit()
+        return flask.jsonify({}), 204
 
 
 @app.route('/api/v1/title/<name_id>/requirements/add', methods=['POST'])

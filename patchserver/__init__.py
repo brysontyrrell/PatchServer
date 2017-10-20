@@ -1,15 +1,25 @@
 """
-/ - Welcome message
+--- Web UI ---
+
+/ - Patch titles list
+
+/patch?id=XXX - View a patch title
+
+/patch/add - Create a new patch title
 
 --- Jamf Pro Endpoints ---
 
 /jamf/v1/software - GET Returns patch software titles
+
 /jamf/v1/software/<Name> - GET Returns subset of named titles
+
 /jamf/v1/patch/<Name> - GET Returns full patch definition of a title
 
 --- Patch Server API ---
 
-/api/v1/title/create - POST Create a new patch software title
+/api/v1/title - POST Create a new patch title
+
+/api/v1/title/<Name> - DELETE Delete a patch title
 
 /api/v1/title/<Name>/requirements - GET Returns all requirements of a title
 /api/v1/title/<Name>/requirements/add - POST Add requirements onto a title
@@ -26,7 +36,7 @@ from flask_sqlalchemy import SQLAlchemy
 import config
 
 __title__ = 'PatchServer'
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 __author__ = 'Bryson Tyrrell'
 
 app = Flask(__name__)
