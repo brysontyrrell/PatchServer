@@ -158,6 +158,36 @@ function indexDeletePatch(name_id) {
 }
 
 
+function indexEditPatch(name_id) {
+	var registerForm = $('#editPatchForm');
+
+	registerForm.on('submit', function (event) {
+		//stop submit the form, we will post it manually.
+		event.preventDefault();
+		var jsonData = ConvertFormToJSON(registerForm);
+		$("#addPatchFormSubmit").prop("disabled", true);
+
+		$.ajax({
+			type: "PUT",
+			url: "../api/v1/title/" + name_id,
+			dataType: 'json',
+			contentType: "application/json",
+			data: JSON.stringify(jsonData),
+			cache: false,
+			success: function (data) {
+				console.log("SUCCESS: ", data);
+				window.location.href = '../';
+			},
+			error: function (e) {
+				console.log("ERROR: ", e);
+				console.log("ERROR MSG: ", e.responseText);
+				window.location.href = '../';
+			}
+		});
+	});
+}
+
+
 /**
  * Functions for patch.html
  */
@@ -194,7 +224,7 @@ function updatePatchAbout(data) {
 		'<td>N/A</td>' +
 		'<td>' + date.toLocaleString('en-us', options) + '</td>' +
 		'<td>' +
-		'    <button class="btn-primary btn-xs pull-right" onclick="window.location.href=\'#\'">' +
+		'    <button class="btn-primary btn-xs pull-right" onclick="window.location.href=\'../patch/edit?id=' +  data.id + '\'">' +
 		'        <span class="glyphicon glyphicon-pencil"></span>' +
 		'    </button>' +
 		'</td>' +
@@ -252,12 +282,7 @@ function updatePatchVersions(data) {
 				'</td>' +
 				'<td>' +
 				'    <button class="btn-success btn-xs" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-chevron-up"></span>' +
-				'    </button>' +
-				'</td>' +
-				'<td>' +
-				'    <button class="btn-warning btn-xs" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-chevron-down"></span>' +
+				'        <span class="glyphicon glyphicon-duplicate"></span>' +
 				'    </button>' +
 				'</td>' +
 				'</tr>';

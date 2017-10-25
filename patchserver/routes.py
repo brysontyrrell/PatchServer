@@ -29,17 +29,26 @@ def ui_root():
 
 @app.route('/patch')
 def ui_patch():
-    patch_title = flask.request.args.get('id')
-    flask.current_app.logger.debug(patch_title)
-    if not patch_title:
+    name_id = flask.request.args.get('id')
+    if not name_id:
         flask.abort(404)
 
-    return flask.render_template('patch.html', patch_title=patch_title), 200
+    return flask.render_template('patch.html', name_id=name_id), 200
 
 
 @app.route('/patch/add')
 def ui_add_patch():
     return flask.render_template('actions/new_title.html'), 200
+
+
+@app.route('/patch/edit')
+def ui_edit_patch():
+    name_id = flask.request.args.get('id')
+    if not name_id:
+        flask.abort(404)
+
+    patch_title = lookup_software_title(name_id)
+    return flask.render_template('actions/edit_title.html', patch_title=patch_title), 200
 
 
 @app.route('/rss')
@@ -155,17 +164,31 @@ def title_create():
         {'id': new_title.id_name, 'database_id': new_title.id}), 201
 
 
-@app.route('/api/v1/title/<name_id>', methods=['DELETE'])
-def title_delete(name_id):
-    """Delete a Patch Software Title"""
-    if flask.request.method == 'DELETE':
-        title = lookup_software_title(name_id)
+@app.route('/api/v1/title/<name_id>', methods=['PUT', 'DELETE'])
+def title_update_delete(name_id):
+    """Update or Delete a Patch Software Title"""
+    title = lookup_software_title(name_id)
+    data = flask.request.get_json()
+
+    if flask.request.method == 'PUT':
+        if 'id' in data:
+            data.pop('id')
+
+        title.name = data['name']
+        title.publisher = data['publisher']
+        title.app_name = data['appName']
+        title.bundle_id = data['bundleId']
+
+        db.session.commit()
+        return '', 204
+
+    elif flask.request.method == 'DELETE':
         db.session.delete(title)
         db.session.commit()
         return flask.jsonify({}), 204
 
 
-@app.route('/api/v1/title/<name_id>/requirements/add', methods=['POST'])
+@app.route('/api/v1/title/<name_id>/requirements', methods=['POST'])
 def title_requirements_add(name_id):
     """
     {
@@ -277,31 +300,31 @@ def create_extension_attributes(ext_att_list, software_title):
 
 @app.route('/api/v1/title/<name_id>/patches')
 def title_patches(name_id):
-    title = lookup_software_title(name_id)
-    return flask.jsonify(
+    """
+    POST Accepts:
         {
-            'id': title.id_name,
-            'patches': [patch.serialize for patch in title.patches]
+            "items": [
+                <patch_object>
+            ]
         }
-    ), 200
-
-
-@app.route('/api/v1/title/<name_id>/patches/add', methods=['POST'])
-def title_patches_add(name_id):
-    """
-    {
-        "items": [
-            <patch_object>
-        ]
-    }
-    """
+        """
     title = lookup_software_title(name_id)
-    data = flask.request.get_json()
 
-    create_patch_objects(data['items'], software_title=title)
-    db.session.commit()
+    if flask.request.method == 'GET':
+        return flask.jsonify(
+            {
+                'id': title.id_name,
+                'patches': [patch.serialize for patch in title.patches]
+            }
+        ), 200
 
-    return flask.jsonify({}), 201
+    elif flask.request.method == 'POST':
+        data = flask.request.get_json()
+
+        create_patch_objects(data['items'], software_title=title)
+        db.session.commit()
+
+        return flask.jsonify({}), 201
 
 
 def create_patch_objects(patch_list, software_title):

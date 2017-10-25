@@ -177,8 +177,8 @@ class Patch(db.Model):
             ],
             'capabilities': [
                 criteria.serialize for criteria in self.capabilities
-            ],
-            'dependencies': []
+            ]
+            # 'dependencies': []
         }
 
 

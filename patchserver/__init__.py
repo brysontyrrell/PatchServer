@@ -7,6 +7,8 @@
 
 /patch/add - Create a new patch title
 
+/patch/edit
+
 --- Jamf Pro Endpoints ---
 
 /jamf/v1/software - GET Returns patch software titles
