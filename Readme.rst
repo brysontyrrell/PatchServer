@@ -57,13 +57,13 @@ API Endpoints
 
 ``http://localhost/api/v1/title``
 
-* ``POST``: Create a new title. You may optionally send a full patch definition
-    from another source to this endpoint.
+``POST``: Create a new title. You may optionally send a full patch definition
+from another source to this endpoint.
 
     .. code-block:: json
 
         {
-            "id" "",
+            "id": "",
             "name": "",
             "publisher": "",
             "appName": "",
@@ -73,7 +73,7 @@ API Endpoints
         - Or full definition -
 
         {
-            "id" "",
+            "id": "",
             "name": "",
             "publisher": "",
             "appName": "",
@@ -85,10 +85,10 @@ API Endpoints
 
 ``http://localhost/api/v1/title/<Title>``
 
-* ``DELETE``: Delete a title
+``DELETE``: Delete a title.
 
-* ``PUT``: Update a title. You cannot change the ``id`` of a title. Additional
-    objects included will be ignored with this operation.
+``PUT``: Update a title. You cannot change the ``id`` of a title. Additional
+objects included will be ignored with this operation.
 
     .. code-block:: json
 
@@ -101,8 +101,8 @@ API Endpoints
 
 ``http://localhost/api/v1/title/<Title>/requirements``
 
-* ``POST``: Add requirements to a title. These requirements must be within an
-    array under an ``items`` key.
+``POST``: Add requirements to a title. These requirements must be within an
+array under an ``items`` key.
 
     .. code-block:: json
 
@@ -116,9 +116,9 @@ API Endpoints
 
 ``http://localhost/api/v1/title/<Title>/patches``
 
-* ``GET``: Returns all patch versions of a title.
+``GET``: Returns all patch versions of a title.
 
-* ``POST``: Add patch versions to a title.
+``POST``: Add patch versions to a title.
 
     .. code-block:: json
 
