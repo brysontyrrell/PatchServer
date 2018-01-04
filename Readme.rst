@@ -18,7 +18,7 @@ Create a Python virtual environment and install the project requirements to it.
     cd /path/to/PatchServer
     virtualenv ./venv
     source ./venv/bin/activate
-    pip install ./requirements.txt
+    pip install -r ./requirements.txt
 
 Run the application.
 
