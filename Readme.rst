@@ -48,7 +48,7 @@ Lists all available titles for Jamf Pro.
 
 Lists a subset of titles, separated by comma, for Jamf Pro.
 
-``http://localhost/jamv/v1/patch/<Title>``
+``http://localhost/jamf/v1/patch/<Title>``
 
 Returns the full definition of a title.
 
