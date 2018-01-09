@@ -176,12 +176,12 @@ function indexEditPatch(name_id) {
 			cache: false,
 			success: function (data) {
 				console.log("SUCCESS: ", data);
-				window.location.href = '../';
+				window.location.href = '../patch?id=' + name_id;
 			},
 			error: function (e) {
 				console.log("ERROR: ", e);
 				console.log("ERROR MSG: ", e.responseText);
-				window.location.href = '../';
+				window.location.href = '../patch?id=' + name_id;
 			}
 		});
 	});
