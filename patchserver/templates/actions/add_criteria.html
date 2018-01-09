@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block body_content %}
+
+    <div class="container-fluid">
+        <div class="col-md-12 main">
+            <h2>Patch Titles</h2>
+
+            <ol class="breadcrumb">
+                <li><a href="/">Home</a></li>
+                <li><a href="/patch?id={{ patch_title.id_name }}">{{ patch_title.id_name }}</a></li>
+                <li class="current">Add Criteria</li>
+            </ol>
+
+            <form class="col-md-4 col-sm-6" id="addCriteriaForm">
+
+                <div class="form-group">
+                    <label for="criteria_key">Criteria</label>
+                    <select class="form-control" id="criteria_key" name="name">
+                        <option selected="selected">Application Bundle ID</option>
+                        <option>Application Title</option>
+                        <option>Application Version</option>
+                        <option>Operating System</option>
+                        <option>Operating System Build</option>
+                        <option>Operating System Name</option>
+                        <option>Operating System Version</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="criteria_key_custom">-or- Custom Criteria</label>
+                    <input type="text" class="form-control" id="criteria_key_custom" name="name_custom"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="criteria_operator">Operator (not all options may apply to your criteria)</label>
+                    <select class="form-control" id="criteria_operator" name="operator">
+                        <option selected="selected">is</option>
+                        <option>is not</option>
+                        <option>like</option>
+                        <option>not like</option>
+                        <option>greater than</option>
+                        <option>less than</option>
+                        <option>greater than or equal</option>
+                        <option>less than or equal</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="criteria_value">Value</label>
+                    <input type="text" class="form-control" id="criteria_value" name="value" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="criteria_type">Type</label>
+                    <select class="form-control type-select" id="criteria_type" name="type">
+                        <option>recon</option>
+                        <option>extensionAttribute</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="criteria_ext_att_form" hidden>
+                    <label for="criteria_ext_att">Extension Attribute</label>
+                    <textarea class="form-control" id="criteria_ext_att" style="font-family:monospace;"></textarea>
+                </div>
+
+                <script>
+                $(function() {
+                    $('.type-select').on('change', function(){
+                        var selected = $(this).find("option:selected").val();
+                        var ext_att = document.getElementById("criteria_ext_att");
+                        if (selected === 'extensionAttribute') {
+                            $('#criteria_ext_att_form').show();
+                            ext_att.disabled=false;
+                        } else {
+                            $('#criteria_ext_att_form').hide();
+                            ext_att.disabled=true;
+                        }
+
+                    });
+                });
+                </script>
+
+                <div class="form-group">
+                    <label for="criteria_and_or">And/Or</label>
+                    <select class="form-control" id="criteria_and_or" name="and">
+                        <option selected="selected" value="True">And</option>
+                        <option value="False">Or</option>
+                    </select>
+                </div>
+
+                <div class="form-group pull-right">
+                    <button class="btn btn-danger" type="button"
+                            onclick="window.location.href='../patch?id={{ patch_title.id_name }}'">Cancel</button>
+                    <button id="{{ patch_title.id_name }}"
+                            class="btn btn-primary"
+                            onclick="indexPatchCriteria(this.id)">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

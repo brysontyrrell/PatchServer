@@ -1,6 +1,6 @@
+import ast
 import dateutil.parser
 import hashlib
-from urlparse import urljoin
 
 import flask
 import sqlalchemy
@@ -49,6 +49,16 @@ def ui_edit_patch():
 
     patch_title = lookup_software_title(name_id)
     return flask.render_template('actions/edit_title.html', patch_title=patch_title), 200
+
+
+@app.route('/patch/criteria')
+def ui_patch_add_criteria():
+    name_id = flask.request.args.get('id')
+    if not name_id:
+        flask.abort(404)
+
+    patch_title = lookup_software_title(name_id)
+    return flask.render_template('actions/add_criteria.html', patch_title=patch_title), 200
 
 
 @app.route('/rss')
@@ -191,16 +201,27 @@ def title_update_delete(name_id):
 @app.route('/api/v1/title/<name_id>/requirements', methods=['POST'])
 def title_requirements_add(name_id):
     """
+    {<criteria_object>}
+
+    -or-
+
     {
         "items": [
-            <criteria_object>
+            <criteria_object_1>,
+            <criteria_object_2>,
+            <criteria_object_3>
         ]
     }
     """
     title = lookup_software_title(name_id)
     data = flask.request.get_json()
+    app.logger.debug(data)
 
-    create_criteria_objects(data['items'], software_title=title)
+    if data.get('items') and isinstance(data.get('items'), list):
+        create_criteria_objects(data['items'], software_title=title)
+    else:
+        create_criteria_objects([data], software_title=title)
+
     db.session.commit()
     return flask.jsonify({}), 201
 
@@ -223,6 +244,11 @@ def create_criteria_objects(criteria_list, software_title=None,
         <criteria_object_3>
     ]
     """
+    def eval_bool(value):
+        try:
+            return ast.literal_eval(value)
+        except ValueError:
+            return bool(value)
 
     for criterion in criteria_list:
         criteria_hash = hashlib.sha1(
@@ -230,7 +256,7 @@ def create_criteria_objects(criteria_list, software_title=None,
             criterion['operator'] +
             criterion['value'] +
             criterion['type'] +
-            str(criterion.get('and', True))
+            str(eval_bool(criterion.get('and', True)))
         ).hexdigest()
 
         criteria = Criteria.query.filter_by(hash=criteria_hash).first()
@@ -240,7 +266,7 @@ def create_criteria_objects(criteria_list, software_title=None,
                 operator=criterion['operator'],
                 value=criterion['value'],
                 type_=criterion['type'],
-                and_=criterion.get('and', True)
+                and_=eval_bool(criterion.get('and', True))
             )
 
         if software_title:

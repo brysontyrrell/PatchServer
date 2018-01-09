@@ -188,6 +188,36 @@ function indexEditPatch(name_id) {
 }
 
 
+function indexPatchCriteria(name_id) {
+	var registerForm = $('#addCriteriaForm');
+
+	registerForm.on('submit', function (event) {
+		//stop submit the form, we will post it manually.
+		event.preventDefault();
+		var jsonData = ConvertFormToJSON(registerForm);
+		$("#addCriteriaFormSubmit").disabled=true;
+
+		$.ajax({
+			type: "POST",
+			url: "../api/v1/title/" + name_id + '/requirements',
+			dataType: 'json',
+			contentType: "application/json",
+			data: JSON.stringify(jsonData),
+			cache: false,
+			success: function (data) {
+				console.log("SUCCESS: ", data);
+				window.location.href = '../patch?id=' + name_id;
+			},
+			error: function (e) {
+				console.log("ERROR: ", e);
+				console.log("ERROR MSG: ", e.responseText);
+				window.location.href = '../patch?id=' + name_id;
+			}
+		});
+	});
+}
+
+
 /**
  * Functions for patch.html
  */
@@ -237,12 +267,13 @@ function updatePatchEligibility(data) {
 	var requirements = data.requirements;
 	if (requirements.length > 0) {
 		$.each(requirements, function (i, item) {
+			var and_value = (item.and) ? 'and' : 'or';
 			var table_row = '<tr>' +
-				'<td>' + item.and + '</td>' +
 				'<td>' + item.name + '</td>' +
 				'<td>' + item.operator + '</td>' +
 				'<td>' + item.value + '</td>' +
 				'<td>' + item.type + '</td>' +
+				'<td>' + and_value + '</td>' +
 				'<td>' +
 				'    <button class="btn-danger btn-xs pull-right" onclick="window.location.href=\'#\'">' +
 				'        <span class="glyphicon glyphicon-remove"></span>' +
