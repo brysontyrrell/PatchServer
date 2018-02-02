@@ -15,7 +15,90 @@ blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
 
 @blueprint.route('/title', methods=['POST'])
 def title_create():
-    """Create a new Patch Software Title"""
+    """Create a new patch definition on the server.
+
+    .. :quickref: Software Title; Create a patch definition.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        POST /api/v1/title HTTP/1.1
+        Content-Type: application/json
+
+        {
+            "id": "Composer",
+            "name": "Composer",
+            "publisher": "Jamf",
+            "appName": "Composer.app",
+            "bundleId": "com.jamfsoftware.Composer",
+            "requirements": ["requirementObjects"],
+            "patches": ["versionObjects"],
+            "extensionAttributes": ["extensionAttributeObjects"]
+        }
+
+    .. note::
+
+        The JSON schema for a patch definition can be found in the project
+        repository at:
+        ``patchserver/routes/validator/schema_full_definition.json``
+
+    **Example Response:**
+
+    A successful response will return a ``201`` status with the numerical
+    database ID as well as the definition's ID.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 201 Created
+        Content-Type: application/json
+
+        {
+            "database_id": 1,
+            "id": "Composer"
+        }
+
+    **Error Responses**
+
+    A ``409`` status is returned if you attempt to create a patch definition
+    using an ID that already exists in the database.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 409 Conflict
+        Content-Type: application/json
+
+        {
+            "database_conflict": "A software title of the provided name already exists."
+        }
+
+    A ``400`` status can be returned if your patch definition fails a
+    validation check against the JSON schema. If this occurs, a reason will
+    be provided in the JSON response.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "invalid_json": "Validation error encountered with submitted JSON for item: /u'true' is not of type u'boolean'"
+        }
+
+    A ``400`` status can be returned if your patch definition fails a
+    validation check against the JSON schema. If this occurs, a reason will
+    be provided in the JSON response.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "invalid_json": "Validation error encountered with submitted JSON: u'true' is not of type u'boolean' for item: /patches/0/components/0/criteria/0/and"
+        }
+
+    """
     data = request.get_json()
     validate_json(data, 'patch')
 
@@ -46,57 +129,131 @@ def title_create():
         {'id': new_title.id_name, 'database_id': new_title.id}), 201
 
 
-@blueprint.route('/title/<name_id>', methods=['PUT', 'DELETE'])
-def title_update_delete(name_id):
-    """Update or Delete a Patch Software Title"""
-    title = lookup_software_title(name_id)
-    data = request.get_json()
+@blueprint.route('/title/<name_id>', methods=['DELETE'])
+def title_delete(name_id):
+    """Delete a patch definition on the server.
 
-    if request.method == 'PUT':
-        validate_json(data, 'patch')
-        
-        if 'id' in data:
-            data.pop('id')
+    .. :quickref: Software Title; Delete a patch definition.
 
-        title.name = data['name']
-        title.publisher = data['publisher']
-        title.app_name = data['appName']
-        title.bundle_id = data['bundleId']
+    **Example Request:**
 
-        db.session.commit()
-        return '', 204
+    .. sourcecode:: http
 
-    elif request.method == 'DELETE':
-        db.session.delete(title)
-        db.session.commit()
-        return jsonify({}), 204
+        DELETE /api/v1/title/Composer HTTP/1.1
 
+    **Example Response:**
 
-@blueprint.route('/title/<name_id>/versions', methods=['GET', 'POST'])
-def title_versions(name_id):
+    A successful response will return a ``204`` status.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 204 No Content
+
+    **Error Responses**
+
+    A ``404`` status is returned if the specified patch definition does
+    not exist.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 404 Not Found
+        Content-Type: application/json
+
+        {
+            "title_not_found": "Composer"
+        }
+
     """
-    POST Accepts:
+    title = lookup_software_title(name_id)
+    db.session.delete(title)
+    db.session.commit()
+    return jsonify({}), 204
+
+
+@blueprint.route('/title/<name_id>/version', methods=['POST'])
+def title_versions(name_id):
+    """Create a new patch version for an existing patch definition.
+
+    .. :quickref: Patch Version; Create a patch version.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        POST /api/v1/title/Composer/version HTTP/1.1
+        Content-Type: application/json
+
         {
             "items": [
-                <patch_object>
+                {
+                    "version": "10.1.1",
+                    "releaseDate": "2017-12-20T10:08:38.270Z",
+                    "standalone": true,
+                    "minimumOperatingSystem": "10.9",
+                    "reboot": false,
+                    "killApps": [
+                        {
+                            "bundleId": "com.jamfsoftware.Composer",
+                            "appName": "Composer.app"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "name": "Composer",
+                            "version": "10.1.1",
+                            "criteria": ["requirementsObjects"]
+                        }
+                    ],
+                    "capabilities": ["requirementsObjects"],
+                    "dependencies": []
+                }
             ]
         }
-        """
+
+    .. note::
+
+        The JSON schema for a patch definition can be found in the project
+        repository at:
+        ``patchserver/routes/validator/schema_version.json``
+
+    .. warning::
+
+        You may pass multiple version objects in the ``items`` array to this
+        endpoint. You must arrange these objects in descending order of the
+        version to be written to the patch definition correctly!
+
+    **Example Response:**
+
+    A successful response will return a ``201`` status.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 201 Created
+        Content-Type: application/json
+
+        {}
+
+    **Error Responses**
+
+    A ``400`` status can be returned if your patch version fails a validation
+    check against the JSON schema. If this occurs, a reason will be provided in
+    the JSON response.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "invalid_json": "Validation error encountered with submitted JSON: u'true' is not of type u'boolean' for item: /patches/0/components/0/criteria/0/and"
+        }
+
+    """
     title = lookup_software_title(name_id)
+    data = request.get_json()
+    validate_json(data, 'version')
 
-    if request.method == 'GET':
-        return jsonify(
-            {
-                'id': title.id_name,
-                'versions': [patch.serialize for patch in title.patches]
-            }
-        ), 200
+    create_patch_objects(data['items'], software_title=title)
+    db.session.commit()
 
-    elif request.method == 'POST':
-        data = request.get_json()
-        validate_json(data, 'version')
-
-        create_patch_objects(data['items'], software_title=title)
-        db.session.commit()
-
-        return jsonify({}), 201
+    return jsonify({}), 201

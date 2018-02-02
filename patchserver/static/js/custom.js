@@ -78,7 +78,7 @@ function indexPatchList() {
 					};
 					var table_row = '<tr>' +
 						'<td>' +
-						'    <button class="btn-info btn-xs" onclick="window.location.href=\'../patch?id=' +  item.id + '\'">' +
+						'    <button class="btn-info btn-xs" onclick="window.location.href=\'#\'">' +
 						'        <span class="glyphicon glyphicon-eye-open"></span>' +
 						'    </button>' +
 						'</td>' +

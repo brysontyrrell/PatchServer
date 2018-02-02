@@ -7,6 +7,17 @@ from .database import db
 from .routes import api, error_handlers, jamf_pro, web_ui
 
 
+def register_blueprints(app):
+    """Registers blueprints with the passed ``app`` object.
+
+    :param flask.Flask app: Instantiated Flask app
+    """
+    app.register_blueprint(error_handlers.blueprint)
+    app.register_blueprint(web_ui.blueprint)
+    app.register_blueprint(api.blueprint)
+    app.register_blueprint(jamf_pro.blueprint)
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
@@ -25,9 +36,19 @@ def create_app():
         if app.config.get('DEBUG'):
             sql_logger.setLevel(logging.DEBUG)
 
-    app.register_blueprint(error_handlers.blueprint)
-    app.register_blueprint(web_ui.blueprint)
-    app.register_blueprint(api.blueprint)
-    app.register_blueprint(jamf_pro.blueprint)
+    register_blueprints(app)
+    return app
 
+
+def create_api_docs_app():
+    """Instantiates the Flask application object for creating documentation."""
+    app = Flask(__name__)
+    app.register_blueprint(api.blueprint)
+    return app
+
+
+def create_jamf_docs_app():
+    """Instantiates the Flask application object for creating documentation."""
+    app = Flask(__name__)
+    app.register_blueprint(jamf_pro.blueprint)
     return app
