@@ -34,8 +34,8 @@ def validate_json(data, schema=None):
     try:
         validate(data, use_schema)
     except ValidationError as error:
-        message = "Validation error encountered with submitted JSON for " \
+        message = "Validation error encountered with submitted JSON: {} for " \
                   "item: /{}".format(
-                      error.message,
+                      str(error.message),
                       '/'.join([str(i) for i in error.path]))
         raise InvalidPatchDefinitionError(message)

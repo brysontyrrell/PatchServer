@@ -10,7 +10,7 @@ blueprint = blueprints.Blueprint('error_handlers', __name__)
 def error_invalid_patch_definition(err):
     current_app.logger.error(err.message)
     flash(err.message)
-    return jsonify({'invalid_json': err.message}, 400)
+    return jsonify({'invalid_json': err.message}), 400
 
 
 @blueprint.app_errorhandler(SoftwareTitleNotFound)
