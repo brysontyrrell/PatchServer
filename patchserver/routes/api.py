@@ -6,6 +6,7 @@ from .api_operations import (
     create_patch_objects,
     lookup_software_title
 )
+from .validator import validate_json
 from ..database import db
 from ..models import SoftwareTitle
 
@@ -16,6 +17,7 @@ blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
 def title_create():
     """Create a new Patch Software Title"""
     data = request.get_json()
+    validate_json(data, 'patch')
 
     new_title = SoftwareTitle(
         id_name=data['id'],
@@ -51,6 +53,8 @@ def title_update_delete(name_id):
     data = request.get_json()
 
     if request.method == 'PUT':
+        validate_json(data, 'patch')
+        
         if 'id' in data:
             data.pop('id')
 
@@ -90,6 +94,7 @@ def title_versions(name_id):
 
     elif request.method == 'POST':
         data = request.get_json()
+        validate_json(data, 'version')
 
         create_patch_objects(data['items'], software_title=title)
         db.session.commit()

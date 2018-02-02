@@ -1,0 +1,368 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "properties": {
+    "name": {
+      "$id": "/properties/name",
+      "type": "string",
+      "examples": [
+        "Composer"
+      ]
+    },
+    "publisher": {
+      "$id": "/properties/publisher",
+      "type": "string",
+      "examples": [
+        "Jamf"
+      ]
+    },
+    "appName": {
+      "$id": "/properties/appName",
+      "type": ["string", "null"],
+      "examples": [
+        "Composer.app"
+      ]
+    },
+    "bundleId": {
+      "$id": "/properties/bundleId",
+      "type": ["string", "null"],
+      "examples": [
+        "com.jamfsoftware.Composer"
+      ]
+    },
+    "lastModified": {
+      "$id": "/properties/lastModified",
+      "type": "string",
+      "examples": [
+        "2017-12-20T16:11:01Z"
+      ]
+    },
+    "currentVersion": {
+      "$id": "/properties/currentVersion",
+      "type": "string",
+      "examples": [
+        "10.1.1"
+      ]
+    },
+    "requirements": {
+      "$id": "/properties/requirements",
+      "type": "array",
+      "items": {
+        "$id": "/properties/requirements/items",
+        "type": "object",
+        "properties": {
+          "name": {
+            "$id": "/properties/requirements/items/properties/name",
+            "type": "string",
+            "examples": [
+              "Application Bundle ID"
+            ]
+          },
+          "operator": {
+            "$id": "/properties/requirements/items/properties/operator",
+            "type": "string",
+            "examples": [
+              "is"
+            ]
+          },
+          "value": {
+            "$id": "/properties/requirements/items/properties/value",
+            "type": "string",
+            "examples": [
+              "com.jamfsoftware.Composer"
+            ]
+          },
+          "type": {
+            "$id": "/properties/requirements/items/properties/type",
+            "type": "string",
+            "examples": [
+              "recon"
+            ]
+          },
+          "and": {
+            "$id": "/properties/requirements/items/properties/and",
+            "type": "boolean",
+            "examples": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "operator",
+          "value",
+          "type",
+          "and"
+        ]
+      }
+    },
+    "patches": {
+      "$id": "/properties/patches",
+      "type": "array",
+      "items": {
+        "$id": "/properties/patches/items",
+        "type": "object",
+        "properties": {
+          "version": {
+            "$id": "/properties/patches/items/properties/version",
+            "type": "string",
+            "examples": [
+              "10.1.1"
+            ]
+          },
+          "releaseDate": {
+            "$id": "/properties/patches/items/properties/releaseDate",
+            "type": "string",
+            "examples": [
+              "2017-12-20T10:08:38.270Z"
+            ]
+          },
+          "standalone": {
+            "$id": "/properties/patches/items/properties/standalone",
+            "type": "boolean",
+            "examples": [
+              true
+            ]
+          },
+          "minimumOperatingSystem": {
+            "$id": "/properties/patches/items/properties/minimumOperatingSystem",
+            "type": "string",
+            "examples": [
+              "10.9"
+            ]
+          },
+          "reboot": {
+            "$id": "/properties/patches/items/properties/reboot",
+            "type": "boolean",
+            "examples": [
+              false
+            ]
+          },
+          "killApps": {
+            "$id": "/properties/patches/items/properties/killApps",
+            "type": "array",
+            "items": {
+              "$id": "/properties/patches/items/properties/killApps/items",
+              "type": "object",
+              "properties": {
+                "bundleId": {
+                  "$id": "/properties/patches/items/properties/killApps/items/properties/bundleId",
+                  "type": "string",
+                  "examples": [
+                    "com.jamfsoftware.Composer"
+                  ]
+                },
+                "appName": {
+                  "$id": "/properties/patches/items/properties/killApps/items/properties/appName",
+                  "type": "string",
+                  "examples": [
+                    "Composer.app"
+                  ]
+                }
+              },
+              "required": [
+                "bundleId",
+                "appName"
+              ]
+            }
+          },
+          "components": {
+            "$id": "/properties/patches/items/properties/components",
+            "type": "array",
+            "items": {
+              "$id": "/properties/patches/items/properties/components/items",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "$id": "/properties/patches/items/properties/components/items/properties/name",
+                  "type": "string",
+                  "examples": [
+                    "Composer"
+                  ]
+                },
+                "version": {
+                  "$id": "/properties/patches/items/properties/components/items/properties/version",
+                  "type": "string",
+                  "examples": [
+                    "10.1.1"
+                  ]
+                },
+                "criteria": {
+                  "$id": "/properties/patches/items/properties/components/items/properties/criteria",
+                  "type": "array",
+                  "items": {
+                    "$id": "/properties/patches/items/properties/components/items/properties/criteria/items",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "$id": "/properties/patches/items/properties/components/items/properties/criteria/items/properties/name",
+                        "type": "string",
+                        "examples": [
+                          "Application Bundle ID"
+                        ]
+                      },
+                      "operator": {
+                        "$id": "/properties/patches/items/properties/components/items/properties/criteria/items/properties/operator",
+                        "type": "string",
+                        "examples": [
+                          "is"
+                        ]
+                      },
+                      "value": {
+                        "$id": "/properties/patches/items/properties/components/items/properties/criteria/items/properties/value",
+                        "type": "string",
+                        "examples": [
+                          "com.jamfsoftware.Composer"
+                        ]
+                      },
+                      "type": {
+                        "$id": "/properties/patches/items/properties/components/items/properties/criteria/items/properties/type",
+                        "type": "string",
+                        "examples": [
+                          "recon"
+                        ]
+                      },
+                      "and": {
+                        "$id": "/properties/patches/items/properties/components/items/properties/criteria/items/properties/and",
+                        "type": "boolean",
+                        "examples": [
+                          true
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "operator",
+                      "value",
+                      "type"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "version",
+                "criteria"
+              ]
+            }
+          },
+          "capabilities": {
+            "$id": "/properties/patches/items/properties/capabilities",
+            "type": "array",
+            "items": {
+              "$id": "/properties/patches/items/properties/capabilities/items",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "$id": "/properties/patches/items/properties/capabilities/items/properties/name",
+                  "type": "string",
+                  "examples": [
+                    "Operating System Version"
+                  ]
+                },
+                "operator": {
+                  "$id": "/properties/patches/items/properties/capabilities/items/properties/operator",
+                  "type": "string",
+                  "examples": [
+                    "greater than or equal"
+                  ]
+                },
+                "value": {
+                  "$id": "/properties/patches/items/properties/capabilities/items/properties/value",
+                  "type": "string",
+                  "examples": [
+                    "10.9"
+                  ]
+                },
+                "type": {
+                  "$id": "/properties/patches/items/properties/capabilities/items/properties/type",
+                  "type": "string",
+                  "examples": [
+                    "recon"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "operator",
+                "value",
+                "type"
+              ]
+            }
+          },
+          "dependencies": {
+            "$id": "/properties/patches/items/properties/dependencies",
+            "type": "array"
+          }
+        },
+        "required": [
+          "version",
+          "releaseDate",
+          "standalone",
+          "minimumOperatingSystem",
+          "reboot",
+          "killApps",
+          "components",
+          "capabilities"
+        ]
+      }
+    },
+    "extensionAttributes": {
+      "$id": "/properties/extensionAttributes",
+      "type": "array",
+      "items": {
+        "$id": "/properties/extensionAttributes/items",
+        "type": "object",
+        "properties": {
+          "key": {
+            "$id": "/properties/extensionAttributes/items/properties/key",
+            "type": "string",
+            "examples": [
+              "composer-ea"
+            ]
+          },
+          "value": {
+            "$id": "/properties/extensionAttributes/items/properties/value",
+            "type": "string",
+            "examples": [
+              "<Base 64 encoded string>"
+            ]
+          },
+          "displayName": {
+            "$id": "/properties/extensionAttributes/items/properties/displayName",
+            "type": "string",
+            "examples": [
+              "Composer"
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "displayName"
+        ]
+      }
+    },
+    "id": {
+      "$id": "/properties/id",
+      "type": "string",
+      "examples": [
+        "Composer"
+      ]
+    }
+  },
+  "required": [
+    "name",
+    "publisher",
+    "appName",
+    "bundleId",
+    "lastModified",
+    "currentVersion",
+    "requirements",
+    "patches",
+    "extensionAttributes",
+    "id"
+  ]
+}

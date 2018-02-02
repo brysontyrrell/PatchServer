@@ -1,14 +1,21 @@
-from flask import blueprints, jsonify
+from flask import blueprints, current_app, flash, jsonify
 from sqlalchemy.exc import IntegrityError
 
-from ..exc import SoftwareTitleNotFound
+from ..exc import InvalidPatchDefinitionError, SoftwareTitleNotFound
 
 blueprint = blueprints.Blueprint('error_handlers', __name__)
 
 
+@blueprint.app_errorhandler(InvalidPatchDefinitionError)
+def error_invalid_patch_definition(err):
+    current_app.logger.error(err.message)
+    flash(err.message)
+    return jsonify({'invalid_json': err.message}, 400)
+
+
 @blueprint.app_errorhandler(SoftwareTitleNotFound)
 def error_title_not_found(err):
-    app.logger.error(err)
+    current_app.logger.error(err)
     return jsonify({'title_not_found': err.message}), 404
 
 

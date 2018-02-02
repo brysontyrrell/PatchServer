@@ -11,9 +11,10 @@ name = "pypi"
 
 [packages]
 
-Flask = "*"
-Flask-SQLAlchemy = "*"
+flask = "*"
+flask-sqlalchemy = "*"
 python-dateutil = "*"
+jsonschema = "*"
 
 
 [requires]

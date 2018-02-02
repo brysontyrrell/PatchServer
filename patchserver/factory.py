@@ -1,5 +1,6 @@
 from flask import Flask
 import logging
+import os
 
 from . import config
 from .database import db
@@ -10,6 +11,10 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
     db.init_app(app)
+
+    if not os.path.exists(config.DATABASE_PATH):
+        with app.app_context():
+            db.create_all()
 
     if app.config.get('SQL_LOGGING'):
         sql_logger = logging.getLogger('sqlalchemy.engine')
