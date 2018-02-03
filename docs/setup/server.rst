@@ -1,6 +1,11 @@
 Setup the Patch Server Web Application
 ======================================
 
+.. warning::
+
+    These instructions do not cover securing your patch server with a TLS
+    certificate for HTTPS connections.
+
 .. note::
 
     You will need to have the ``pip`` and ``virtualenv`` commands installed to
@@ -36,6 +41,44 @@ Run the application.
 You will be able to access the application using ``localhost`` or your
 computer's IP address at port ``5000``.
 
+Running as a Docker Container
+-----------------------------
+
+In the ``installation/docker/`` directory of the project repository is a
+``Dockerfile`` that can be used to launch the patch server as a container.
+
+Clone the project repository to your computer. Create the Docker image with:
+
+.. code-block:: bash
+
+    $ cd /path/to/PatchServer
+    $ docker build --tag patchserver:latest -f installation/docker/Dockerfile .
+
+If you have Docker installed, you can run the image with:
+
+.. code-block:: bash
+
+    $ docker run -v /<patchserver-data>:/var/lib/patchserver -p 5000:5000 patchserver
+
+.. note::
+
+    Use the ``-d`` option to run the container in the background.
+
+.. note::
+
+    The ``-v /<patchserver-data>:/var/lib/patchserver`` option is to mount a
+    local directory to the path in the running container where the persistent
+    data for the patch server is stored (i.e. the database).
+
+.. warning::
+
+    If you do not attach a volume to ``/var/lib/patchserver`` the database will
+    be erased when the container is stopped and removed.
+
+You will be able to access the application using the IP address of the host
+(your computer's IP address when running Docker locally) at port ``5000``.
+
+
 Installation on macOS
 ---------------------
 
@@ -49,8 +92,8 @@ Write the following into a new file called ``patch_server.wsgi``:
 
 .. note::
 
-    Make sure to grant execute permissions on this file:
-    ``chown a+x patch_server.wsgi``.
+    Grant execute permissions on this file (mode ``755``).
+    This file can be found in the repository at ``installation/macOS/``
 
 .. code-block:: python
 
@@ -60,7 +103,6 @@ Write the following into a new file called ``patch_server.wsgi``:
     from patchserver.factory import create_app
 
     application = create_app()
-
 
 In the Terminal, create a virtual environment within this directory called
 ``venv`` and install the project requirements.
@@ -103,6 +145,11 @@ You can now launch the application using the following command:
 To launch the patch server automatically when the system boots, write the
 following launch daemon to ``/Library/LaunchDaemons/com.patchserver.daemon.plist``.
 
+.. note::
+
+    This launch daemon should be owned by ``root:wheel`` with mode ``644``.
+    This file can be found in the repository at ``installation/macOS/``
+
 .. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
@@ -123,10 +170,6 @@ following launch daemon to ``/Library/LaunchDaemons/com.patchserver.daemon.plist
         </dict>
     </plist>
 
-.. note::
-
-    This launch daemon should be owned by ``root:wheel`` with mode ``644``.
-
 The following file tree shows the locations of all the **required** files and
 resources copied or created during these steps::
 
@@ -143,3 +186,7 @@ resources copied or created during these steps::
         └── local/
             └── bin/
                 └── patchserver/                 <-- Apache server utilities
+
+
+You will be able to access the application using ``localhost`` or your
+computer's IP address at port ``5000``.
