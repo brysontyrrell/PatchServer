@@ -63,9 +63,8 @@ def software_titles():
         ]
 
     """
-    if request.method == 'GET':
-        titles = SoftwareTitle.query.all()
-        return jsonify([title.serialize_short for title in titles]), 200
+    titles = SoftwareTitle.query.all()
+    return jsonify([title.serialize_short for title in titles]), 200
 
 
 @blueprint.route('/software/<name_ids>')

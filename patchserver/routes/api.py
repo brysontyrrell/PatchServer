@@ -1,10 +1,11 @@
-from flask import blueprints, jsonify, request
+from flask import blueprints, jsonify, request, send_file
 
 from .api_operations import (
     create_criteria_objects,
     create_extension_attributes,
     create_patch_objects,
-    lookup_software_title
+    lookup_software_title,
+    create_backup_archive
 )
 from .validator import validate_json
 from ..database import db
@@ -257,3 +258,34 @@ def title_versions(name_id):
     db.session.commit()
 
     return jsonify({}), 201
+
+
+@blueprint.route('/backup')
+def backup_titles():
+    """Download a zipped archive of all patch definitions.
+
+    .. :quickref: Software Title; Downloadable archive of all software titles.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        GET /api/v1/backup HTTP/1.1
+
+    **Example Response:**
+
+    A successful response will return a ``200`` status and a zipped archive
+    containing the patch definitions.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/zip
+
+        <patch_archive.zip>
+
+    """
+    archive = create_backup_archive()
+    return send_file(
+        archive, as_attachment=True, attachment_filename='patch_archive.zip'
+    ), 200

@@ -40,15 +40,8 @@ def create_app():
     return app
 
 
-def create_api_docs_app():
+def create_docs_app():
     """Instantiates the Flask application object for creating documentation."""
     app = Flask(__name__)
-    app.register_blueprint(api.blueprint)
-    return app
-
-
-def create_jamf_docs_app():
-    """Instantiates the Flask application object for creating documentation."""
-    app = Flask(__name__)
-    app.register_blueprint(jamf_pro.blueprint)
+    register_blueprints(app)
     return app

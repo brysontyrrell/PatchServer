@@ -9,11 +9,13 @@ Patch Server API
 Endpoints
 ---------
 
-.. qrefflask:: patchserver.factory:create_api_docs_app()
+.. qrefflask:: patchserver.factory:create_docs_app()
+  :blueprints: api
   :undoc-static:
 
 Reference
 ---------
 
-.. autoflask:: patchserver.factory:create_api_docs_app()
+.. autoflask:: patchserver.factory:create_docs_app()
+  :blueprints: api
   :undoc-static:

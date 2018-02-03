@@ -1,6 +1,11 @@
 import ast
 import dateutil.parser
 import hashlib
+import json
+import os
+import tempfile
+import shutil
+import zipfile
 
 from ..database import db
 from ..models import (
@@ -171,3 +176,27 @@ def create_patch_object_kill_apps(kill_apps_list, patch_object):
             patch=patch_object
         )
         db.session.add(new_kill_app)
+
+
+def create_backup_archive():
+    titles = SoftwareTitle.query.all()
+    tempdir = tempfile.mkdtemp(prefix='patch-dump-')
+
+    for title in titles:
+        filename = '{}.json'.format(title.id_name)
+        with open(os.path.join(tempdir, filename), 'w') as f_obj:
+            json.dump(title.serialize, f_obj)
+
+    archive_list = os.listdir(tempdir)
+    archive_path = tempfile.mkstemp(prefix='patch-archive-')[1]
+
+    with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zip:
+        for filename in archive_list:
+            zip.write(
+                os.path.join(tempdir, filename),
+                os.path.join('patch_archive', filename)
+            )
+
+    shutil.rmtree(tempdir)
+
+    return archive_path
