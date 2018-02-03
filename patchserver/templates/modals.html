@@ -1,0 +1,20 @@
+<div class="modal fade" id="newTitleModal" tabindex="-1" role="dialog" aria-labelledby="newTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload the Patch Definition</h3>
+            </div>
+            <form method="post" action="/api/v1/title?redirect=true" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="file" class="filestyle" name="file" accept="application/json" data-buttonText="&ensp;Choose File" required/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

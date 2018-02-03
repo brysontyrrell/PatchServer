@@ -22,11 +22,6 @@ function ConvertFormToJSON(form){
     return json;
 }
 
-function urlParam(name) {
-	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-	return results[1] || 0;
-}
-
 
 // https://gist.github.com/kmaida/6045266
 function ConvertTimestamp(timestamp) {
@@ -60,7 +55,7 @@ function ConvertTimestamp(timestamp) {
 /**
  * Functions for index.html
  */
-function indexPatchList() {
+function listSoftwareTitles() {
 	$.ajax(
 	{
 		type: "GET",
@@ -77,16 +72,16 @@ function indexPatchList() {
 						day: "numeric", hour: "2-digit", minute: "2-digit"
 					};
 					var table_row = '<tr>' +
-						'<td>' +
-						'    <button class="btn-info btn-xs" onclick="window.location.href=\'#\'">' +
-						'        <span class="glyphicon glyphicon-eye-open"></span>' +
-						'    </button>' +
-						'</td>' +
 						'<td>' + item.id + '</td>' +
 						'<td>' + item.name + '</td>' +
 						'<td>' + item.publisher + '</td>' +
 						'<td>' + item.currentVersion + '</td>' +
 						'<td>' + date.toLocaleString('en-us', options) + '</td>' +
+						'<td>' +
+						'    <button class="btn-info btn-xs" onclick="window.location.href=\'../jamf/v1/patch/' + item.id + '\'">' +
+						'        <span class="glyphicon glyphicon-eye-open"></span>' +
+						'    </button>' +
+						'</td>' +
                         '<td>' +
 						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeletePatch(this.id)">' +
 						'        <span class="glyphicon glyphicon-remove"></span>' +
@@ -111,40 +106,40 @@ function indexPatchList() {
 }
 
 
-function indexAddPatch() {
-	var registerForm = $('#addPatchForm');
-
-	registerForm.on('submit', function (event) {
-		//stop submit the form, we will post it manually.
-		event.preventDefault();
-		var jsonData = ConvertFormToJSON(registerForm);
-		$("#addPatchFormSubmit").prop("disabled", true);
-
-		$.ajax({
-			type: "POST",
-			url: "../api/v1/title",
-			dataType: 'json',
-			contentType: "application/json",
-			data: JSON.stringify(jsonData),
-			cache: false,
-			success: function (data) {
-				console.log("SUCCESS: ", data);
-				window.location.href = '../';
-			},
-			error: function (e) {
-				console.log("ERROR: ", e);
-				console.log("ERROR MSG: ", e.responseText);
-				window.location.href = '../';
-			}
-		});
-	});
-}
+//function indexAddPatch() {
+//	var registerForm = $('#addPatchForm');
+//
+//	registerForm.on('submit', function (event) {
+//		//stop submit the form, we will post it manually.
+//		event.preventDefault();
+//		var jsonData = ConvertFormToJSON(registerForm);
+//		$("#addPatchFormSubmit").prop("disabled", true);
+//
+//		$.ajax({
+//			type: "POST",
+//			url: "../api/v1/title",
+//			dataType: 'json',
+//			contentType: "application/json",
+//			data: JSON.stringify(jsonData),
+//			cache: false,
+//			success: function (data) {
+//				console.log("SUCCESS: ", data);
+//				window.location.href = '../';
+//			},
+//			error: function (e) {
+//				console.log("ERROR: ", e);
+//				console.log("ERROR MSG: ", e.responseText);
+//				window.location.href = '../';
+//			}
+//		});
+//	});
+//}
 
 
 function indexDeletePatch(name_id) {
     $.ajax({
         type: 'DELETE',
-        url: "../api/v1/title/" + name_id,
+        url: "../api/v1/title/" + name_id + '?redirect=true',
         cache: false,
         success: function (data) {
             window.location.href = '../';
@@ -155,169 +150,4 @@ function indexDeletePatch(name_id) {
             window.location.href = '../';
         }
     });
-}
-
-
-function indexEditPatch(name_id) {
-	var registerForm = $('#editPatchForm');
-
-	registerForm.on('submit', function (event) {
-		//stop submit the form, we will post it manually.
-		event.preventDefault();
-		var jsonData = ConvertFormToJSON(registerForm);
-		$("#addPatchFormSubmit").prop("disabled", true);
-
-		$.ajax({
-			type: "PUT",
-			url: "../api/v1/title/" + name_id,
-			dataType: 'json',
-			contentType: "application/json",
-			data: JSON.stringify(jsonData),
-			cache: false,
-			success: function (data) {
-				console.log("SUCCESS: ", data);
-				window.location.href = '../patch?id=' + name_id;
-			},
-			error: function (e) {
-				console.log("ERROR: ", e);
-				console.log("ERROR MSG: ", e.responseText);
-				window.location.href = '../patch?id=' + name_id;
-			}
-		});
-	});
-}
-
-
-function indexPatchCriteria(name_id) {
-	var registerForm = $('#addCriteriaForm');
-
-	registerForm.on('submit', function (event) {
-		//stop submit the form, we will post it manually.
-		event.preventDefault();
-		var jsonData = ConvertFormToJSON(registerForm);
-		$("#addCriteriaFormSubmit").disabled=true;
-
-		$.ajax({
-			type: "POST",
-			url: "../api/v1/title/" + name_id + '/requirements',
-			dataType: 'json',
-			contentType: "application/json",
-			data: JSON.stringify(jsonData),
-			cache: false,
-			success: function (data) {
-				console.log("SUCCESS: ", data);
-				window.location.href = '../patch?id=' + name_id;
-			},
-			error: function (e) {
-				console.log("ERROR: ", e);
-				console.log("ERROR MSG: ", e.responseText);
-				window.location.href = '../patch?id=' + name_id;
-			}
-		});
-	});
-}
-
-
-/**
- * Functions for patch.html
- */
-function viewPatchLoad() {
-	var patchId = urlParam('id');
-	$.ajax(
-	{
-		type: "GET",
-		url: '../jamf/v1/patch/' + patchId,
-		dataType: "json",
-		cache: false,
-		success: function (data) {
-			updatePatchAbout(data);
-			updatePatchEligibility(data);
-			updatePatchVersions(data)
-		}
-	});
-}
-
-
-function updatePatchAbout(data) {
-	var date = new Date(data.lastModified);
-	var options = {
-		weekday: "long", year: "numeric", month: "short",
-		day: "numeric", hour: "2-digit", minute: "2-digit"
-	};
-	var table_row = '<tr>' +
-		'<td>' + data.name + '</td>' +
-		'<td>' + data.id + '</td>' +
-		'<td>' + data.publisher + '</td>' +
-		'<td>' + data.currentVersion + '</td>' +
-		'<td>' + data.appName + '</td>' +
-		'<td>' + data.bundleId + '</td>' +
-		'<td>N/A</td>' +
-		'<td>' + date.toLocaleString('en-us', options) + '</td>' +
-		'<td>' +
-		'    <button class="btn-primary btn-xs pull-right" onclick="window.location.href=\'../patch/edit?id=' +  data.id + '\'">' +
-		'        <span class="glyphicon glyphicon-pencil"></span>' +
-		'    </button>' +
-		'</td>' +
-		'</tr>';
-	$('#patch-about > tbody:last-child').append(table_row);
-}
-
-
-function updatePatchEligibility(data) {
-	var requirements = data.requirements;
-	if (requirements.length > 0) {
-		$.each(requirements, function (i, item) {
-			var and_value = (item.and) ? 'and' : 'or';
-			var table_row = '<tr>' +
-				'<td>' + item.name + '</td>' +
-				'<td>' + item.operator + '</td>' +
-				'<td>' + item.value + '</td>' +
-				'<td>' + item.type + '</td>' +
-				'<td>' + and_value + '</td>' +
-				'<td>' +
-				'    <button class="btn-danger btn-xs pull-right" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-remove"></span>' +
-				'    </button>' +
-				'</td>' +
-				'</tr>';
-			$('#patch-eligibility > tbody:last-child').append(table_row);
-		});
-	}
-}
-
-
-function updatePatchVersions(data) {
-	var patches = data.patches;
-	if (patches.length > 0) {
-		var options = {
-			weekday: "long", year: "numeric", month: "short",
-			day: "numeric", hour: "2-digit", minute: "2-digit"
-		};
-		$.each(patches, function (i, item) {
-			var date = new Date(item.releaseDate);
-			var table_row = '<tr>' +
-				'<td>' +
-				'    <button class="btn-info btn-xs" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-eye-open"></span>' +
-				'    </button>' +
-				'</td>' +
-				'<td>' + item.version + '</td>' +
-				'<td>' + date.toLocaleString('en-us', options) + '</td>' +
-				'<td>' + item.minimumOperatingSystem + '</td>' +
-				'<td>' + item.reboot + '</td>' +
-				'<td>' + item.standalone + '</td>' +
-				'<td>' +
-				'    <button class="btn-danger btn-xs" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-remove"></span>' +
-				'    </button>' +
-				'</td>' +
-				'<td>' +
-				'    <button class="btn-success btn-xs" onclick="window.location.href=\'#\'">' +
-				'        <span class="glyphicon glyphicon-duplicate"></span>' +
-				'    </button>' +
-				'</td>' +
-				'</tr>';
-			$('#patch-versions > tbody:last-child').append(table_row);
-		});
-	}
 }

@@ -8,7 +8,7 @@ blueprint = blueprints.Blueprint('web_ui', __name__)
 
 
 @blueprint.route('/')
-def ui_root():
+def index():
     return render_template('index.html'), 200
 
 

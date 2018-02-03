@@ -1,4 +1,14 @@
-from flask import blueprints, jsonify, request, send_file
+import json
+
+from flask import (
+    blueprints,
+    flash,
+    jsonify,
+    redirect,
+    request,
+    send_file,
+    url_for
+)
 
 from .api_operations import (
     create_criteria_objects,
@@ -9,6 +19,7 @@ from .api_operations import (
 )
 from .validator import validate_json
 from ..database import db
+from ..exc import InvalidPatchDefinitionError
 from ..models import SoftwareTitle
 
 blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
@@ -101,6 +112,12 @@ def title_create():
 
     """
     data = request.get_json()
+    if not data:
+        try:
+            data = json.load(request.files['file'])
+        except ValueError:
+            raise InvalidPatchDefinitionError('No JSON data could be found.')
+
     validate_json(data, 'patch')
 
     new_title = SoftwareTitle(
@@ -126,8 +143,19 @@ def title_create():
 
     db.session.commit()
 
-    return jsonify(
-        {'id': new_title.id_name, 'database_id': new_title.id}), 201
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Software title created:',
+                'message': 'View at <a href="{0}">{0}</a>'.format(
+                    url_for('jamf_pro.patch_by_name_id',
+                            name_id=new_title.id_name))
+            },
+            'success')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify(
+            {'id': new_title.id_name, 'database_id': new_title.id}), 201
 
 
 @blueprint.route('/title/<name_id>', methods=['DELETE'])
@@ -168,7 +196,17 @@ def title_delete(name_id):
     title = lookup_software_title(name_id)
     db.session.delete(title)
     db.session.commit()
-    return jsonify({}), 204
+
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Software title deleted:',
+                'message': name_id
+            },
+            'success')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify({}), 204
 
 
 @blueprint.route('/title/<name_id>/version', methods=['POST'])
@@ -252,7 +290,14 @@ def title_versions(name_id):
     """
     title = lookup_software_title(name_id)
     data = request.get_json()
-    validate_json(data, 'version')
+
+    for version in data['items']:
+        validate_json(version, 'version')
+        if version['version'] in [patch.version for patch in title.patches]:
+            return jsonify(
+                {'database_conflict': 'The provided version already exists '
+                                      'for this software title.'}
+            ), 409
 
     create_patch_objects(data['items'], software_title=title)
     db.session.commit()

@@ -1,4 +1,4 @@
-from flask import blueprints, jsonify, request
+from flask import blueprints, jsonify
 import sqlalchemy
 
 from .api_operations import lookup_software_title
