@@ -146,7 +146,7 @@ def title_create():
     if request.args.get('redirect'):
         flash(
             {
-                'title': 'Software title created:',
+                'title': 'Software title created',
                 'message': 'View at <a href="{0}">{0}</a>'.format(
                     url_for('jamf_pro.patch_by_name_id',
                             name_id=new_title.id_name))
