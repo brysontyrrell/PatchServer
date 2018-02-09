@@ -1,10 +1,10 @@
-.. Jamf Pro Community Patch Server documentation master file, created by
+.. Patch Server for Jamf Pro documentation master file, created by
    sphinx-quickstart on Fri Feb  2 12:00:28 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Jamf Pro Community Patch Server
-================================
+Patch Server for Jamf Pro
+=========================
 
 An open-source implementation of an external patch source for use with Jamf Pro
 (version 10.2+).
@@ -109,6 +109,11 @@ definitions for all your software titles.
 
 Change History
 --------------
+
+0.5.2 (2018-02-08)
+^^^^^^^^^^^^^^^^^^
+
+A minor renaming.
 
 0.5.1 (2018-02-03)
 ^^^^^^^^^^^^^^^^^^
