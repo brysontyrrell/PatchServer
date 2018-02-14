@@ -17,6 +17,7 @@ from .api_operations import (
     lookup_software_title,
     create_backup_archive
 )
+from .auth import api_auth
 from .validator import validate_json
 from ..database import db
 from ..exc import InvalidPatchDefinitionError
@@ -27,9 +28,47 @@ blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
 
 @blueprint.route('/token', methods=['POST'])
 def token_create():
+    """Create an API token for the server.
+
+    .. :quickref: Token; Create the API token.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        POST /api/v1/token HTTP/1.1
+
+    **Example Response:**
+
+    A successful response will return a ``201`` status with the API token.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 201 Created
+        Content-Type: application/json
+
+        {
+            "token_created": "94631ec5c65e4dd19fb81479abdd2929"
+        }
+
+    **Error Responses**
+
+    A ``403`` status is returned if an API token already exists.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 403 Forbidden
+        Content-Type: application/json
+
+        {
+            "forbidden": "A token already exists for this server"
+        }
+
+    :return:
+    """
     if ApiToken.query.first():
         return jsonify(
-            {'Denied': 'A token already exists for this server'}), 403
+            {'forbidden': 'A token already exists for this server'}), 403
 
     new_token = ApiToken()
     db.session.add(new_token)
@@ -39,6 +78,7 @@ def token_create():
 
 
 @blueprint.route('/title', methods=['POST'])
+@api_auth
 def title_create():
     """Create a new patch definition on the server.
 
@@ -172,6 +212,7 @@ def title_create():
 
 
 @blueprint.route('/title/<name_id>', methods=['DELETE'])
+@api_auth
 def title_delete(name_id):
     """Delete a patch definition on the server.
 
@@ -213,7 +254,7 @@ def title_delete(name_id):
     if request.args.get('redirect'):
         flash(
             {
-                'title': 'Software title deleted:',
+                'title': 'Software title deleted',
                 'message': name_id
             },
             'success')
@@ -223,10 +264,11 @@ def title_delete(name_id):
 
 
 @blueprint.route('/title/<name_id>/version', methods=['POST'])
+@api_auth
 def title_versions(name_id):
     """Create a new patch version for an existing patch definition.
 
-    .. :quickref: Patch Version; Create a patch version.
+    .. :quickref: Software Title; Create a patch version.
 
     **Example Request:**
 
@@ -322,7 +364,7 @@ def title_versions(name_id):
 def backup_titles():
     """Download a zipped archive of all patch definitions.
 
-    .. :quickref: Software Title; Downloadable archive of all software titles.
+    .. :quickref: Backup; Downloadable archive of all software titles.
 
     **Example Request:**
 
