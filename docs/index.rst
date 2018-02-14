@@ -110,6 +110,11 @@ definitions for all your software titles.
 Change History
 --------------
 
+0.5.3 (2018-02-13)
+^^^^^^^^^^^^^^^^^^
+
+Because accurate and easy to read instructions are important.
+
 0.5.2 (2018-02-08)
 ^^^^^^^^^^^^^^^^^^
 
