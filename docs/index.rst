@@ -111,6 +111,11 @@ definitions for all your software titles.
 Change History
 --------------
 
+0.6.0 (2018-02-14)
+^^^^^^^^^^^^^^^^^^
+
+You can secure the API with token authentication (if you really want to).
+
 0.5.3 (2018-02-13)
 ^^^^^^^^^^^^^^^^^^
 
