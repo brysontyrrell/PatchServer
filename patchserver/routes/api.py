@@ -20,9 +20,22 @@ from .api_operations import (
 from .validator import validate_json
 from ..database import db
 from ..exc import InvalidPatchDefinitionError
-from ..models import SoftwareTitle
+from ..models import ApiToken, SoftwareTitle
 
 blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
+
+
+@blueprint.route('/token', methods=['POST'])
+def token_create():
+    if ApiToken.query.first():
+        return jsonify(
+            {'Denied': 'A token already exists for this server'}), 403
+
+    new_token = ApiToken()
+    db.session.add(new_token)
+    db.session.commit()
+
+    return jsonify({'token_created': new_token.token}), 201
 
 
 @blueprint.route('/title', methods=['POST'])

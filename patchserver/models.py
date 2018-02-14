@@ -1,6 +1,7 @@
 from datetime import datetime
 import hashlib
 from operator import itemgetter
+import uuid
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -23,6 +24,21 @@ def datetime_to_iso(date):
     :param datetime date: Datetime object
     """
     return date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def generate_token():
+    """Created a 32 character token from a UUID"""
+    return uuid.uuid4().hex
+
+
+class ApiToken(db.Model):
+    __tablename__ = 'api_token'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    token = db.Column(db.String(32), default=generate_token)
+    created_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 def sorted_criteria(criteria_list):
