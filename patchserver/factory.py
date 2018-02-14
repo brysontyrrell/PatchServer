@@ -5,6 +5,7 @@ import os
 from . import config
 from .database import db
 from .routes import api, error_handlers, jamf_pro, web_ui
+from .utilities import reset_api_token
 
 
 def register_blueprints(app):
@@ -26,6 +27,9 @@ def create_app():
     # if not os.path.exists(config.DATABASE_PATH):
     with app.app_context():
         db.create_all()
+
+        if app.config.get('RESET_API_TOKEN'):
+            reset_api_token()
 
     if app.config.get('SQL_LOGGING'):
         sql_logger = logging.getLogger('sqlalchemy.engine')
