@@ -24,6 +24,7 @@ An open-source implementation of an external patch source for use with Jamf Pro
    :maxdepth: 1
    :caption: API Documentation
 
+   apis/auth
    apis/ps_api
    apis/jamf_pro
 
