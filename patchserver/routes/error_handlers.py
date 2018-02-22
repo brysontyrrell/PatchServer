@@ -1,9 +1,29 @@
 from flask import blueprints, current_app, flash, jsonify, redirect, request, url_for
 from sqlalchemy.exc import IntegrityError
 
-from ..exc import InvalidPatchDefinitionError, SoftwareTitleNotFound
+from ..exc import (
+    InvalidPatchDefinitionError,
+    SoftwareTitleNotFound,
+    Unauthorized
+)
 
 blueprint = blueprints.Blueprint('error_handlers', __name__)
+
+
+@blueprint.app_errorhandler(Unauthorized)
+def unauthorized(err):
+    current_app.logger.error(err.message)
+
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Unauthorized',
+                'message': err.message
+            },
+            'warning')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify({'unauthorized': err.message}), 401
 
 
 @blueprint.app_errorhandler(InvalidPatchDefinitionError)

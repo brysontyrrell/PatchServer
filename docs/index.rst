@@ -24,6 +24,7 @@ An open-source implementation of an external patch source for use with Jamf Pro
    :maxdepth: 1
    :caption: API Documentation
 
+   apis/auth
    apis/ps_api
    apis/jamf_pro
 
@@ -109,6 +110,11 @@ definitions for all your software titles.
 
 Change History
 --------------
+
+0.6.0 (2018-02-14)
+^^^^^^^^^^^^^^^^^^
+
+You can secure the API with token authentication (if you really want to).
 
 0.5.3 (2018-02-13)
 ^^^^^^^^^^^^^^^^^^
