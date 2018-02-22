@@ -1,7 +1,9 @@
 import json
+from urlparse import urlparse
 
 from flask import (
     blueprints,
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -19,9 +21,10 @@ from .api_operations import (
 )
 from .auth import api_auth
 from .validator import validate_json
+from .webhooks import webhook_event
 from ..database import db
-from ..exc import InvalidPatchDefinitionError
-from ..models import ApiToken, SoftwareTitle
+from ..exc import InvalidPatchDefinitionError, InvalidWebhook
+from ..models import ApiToken, SoftwareTitle, WebhookUrls
 
 blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -258,7 +261,7 @@ def title_delete(name_id):
                 'message': name_id
             },
             'success')
-        return redirect(url_for('web_ui.index'))
+        return redirect(url_for('web_ui.index'), 303)
     else:
         return jsonify({}), 204
 
@@ -389,3 +392,109 @@ def backup_titles():
     return send_file(
         archive, as_attachment=True, attachment_filename='patch_archive.zip'
     ), 200
+
+
+@blueprint.route('/webhooks', methods=['GET', 'POST'])
+def webhooks():
+    if request.method == 'GET':
+        results = list()
+        for webhook in WebhookUrls.query.all():
+            results.append(webhook.serialize)
+
+        return jsonify(results), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            data = {
+                'url': request.form.get('url', ''),
+                'enabled': bool(request.form.get('enabled', True)),
+                'send_definition': bool(request.form.get('send_definition'))
+            }
+
+        def validate_url(url):
+            parsed = urlparse(url)
+            if parsed.scheme and parsed.netloc:
+                return True
+            else:
+                return False
+
+        if not validate_url(data['url']):
+            raise InvalidWebhook('The provided URL is invalid')
+
+        new_webhook = WebhookUrls(
+            url=data['url'],
+            enabled=data['enabled'],
+            send_definition=data['send_definition']
+        )
+        db.session.add(new_webhook)
+        db.session.commit()
+
+        if request.args.get('redirect'):
+            flash(
+                {
+                    'title': 'Webhook saved',
+                    'message': 'The new webhook has been saved.'
+                },
+                'success')
+            return redirect(url_for('web_ui.index'))
+        else:
+            return jsonify({'id': new_webhook.id}), 201
+
+
+@blueprint.route('/webhooks/<webhook_id>', methods=['DELETE'])
+@api_auth
+def webhooks_delete(webhook_id):
+    """Delete a configured webhook from the server by ID.
+
+    .. :quickref: Webhooks; Delete a webhook.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        DELETE /api/v1/webhooks/1 HTTP/1.1
+
+    **Example Response:**
+
+    A successful response will return a ``204`` status.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 204 No Content
+
+    **Error Responses**
+
+    A ``404`` status is returned if the specified webhook does not exist.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 404 Not Found
+        Content-Type: application/json
+
+        {
+            "webhook_id_not_found": 1
+        }
+
+    """
+    webhook = WebhookUrls.query.filter_by(id=webhook_id).first()
+    if not webhook:
+        flash({'title': 'Not found!', 'message': ''}, 'error')
+        return redirect(url_for('web_ui.index'))
+
+    webhook_url = webhook.url
+    current_app.logger.debug(webhook_url)
+
+    db.session.delete(webhook)
+    db.session.commit()
+
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Webhook deleted',
+                'message': webhook_url
+            },
+            'success')
+        return redirect(url_for('web_ui.index'), 303)
+    else:
+        return jsonify({}), 204

@@ -12,3 +12,7 @@ class InvalidPatchDefinitionError(PatchServerException):
 
 class SoftwareTitleNotFound(PatchServerException):
     pass
+
+
+class InvalidWebhook(PatchServerException):
+    pass

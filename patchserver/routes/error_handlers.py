@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 
 from ..exc import (
     InvalidPatchDefinitionError,
+    InvalidWebhook,
     SoftwareTitleNotFound,
     Unauthorized
 )
@@ -34,6 +35,22 @@ def error_invalid_patch_definition(err):
         flash(
             {
                 'title': 'Invalid Patch Definition JSON',
+                'message': err.message
+            },
+            'warning')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify({'invalid_json': err.message}), 400
+
+
+@blueprint.app_errorhandler(InvalidWebhook)
+def error_invalid_webhook(err):
+    current_app.logger.error(err.message)
+
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Invalid Webhook',
                 'message': err.message
             },
             'warning')
