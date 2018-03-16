@@ -82,8 +82,6 @@ You will be able to access the application using the IP address of the host
 Installation on macOS
 ---------------------
 
-The following instructions are for setting up the patch server application on
-a macOS system using ``mod_wsgi-express``.
 The following instructions are for setting up the patch server application on a
 macOS system using ``mod_wsgi-express``.
 
