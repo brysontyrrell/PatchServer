@@ -117,13 +117,9 @@ function listWebhooks() {
 				$.each(data, function (i, item) {
 					var table_row = '<tr>' +
 						'<td>' + item.enabled + '</td>' +
+						'<td>' + item.verify_ssl + '</td>' +
 						'<td>' + item.send_definition + '</td>' +
 						'<td>' + item.url + '</td>' +
-						'<td>' +
-						'    <button class="btn-info btn-xs" onclick="window.location.href=\'../api/v1/webhooks/' + item.id + '\'">' +
-						'        <span class="glyphicon glyphicon-eye-open"></span>' +
-						'    </button>' +
-						'</td>' +
                         '<td>' +
 						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
 						'        <span class="glyphicon glyphicon-remove"></span>' +

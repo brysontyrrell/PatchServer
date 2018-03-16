@@ -48,6 +48,7 @@ class WebhookUrls(db.Model):
 
     url = db.Column(db.String(255), unique=True)
     enabled = db.Column(db.Boolean, default=True)
+    verify_ssl = db.Column(db.Boolean, default=True)
     send_definition = db.Column(db.Boolean, default=False)
 
     @property
@@ -56,6 +57,7 @@ class WebhookUrls(db.Model):
             'id': self.id,
             'url': self.url,
             'enabled': self.enabled,
+            'verify_ssl': self.verify_ssl,
             'send_definition': self.send_definition
         }
 

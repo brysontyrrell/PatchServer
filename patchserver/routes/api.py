@@ -5,6 +5,7 @@ from flask import (
     blueprints,
     current_app,
     flash,
+    g,
     jsonify,
     redirect,
     request,
@@ -82,6 +83,7 @@ def token_create():
 
 @blueprint.route('/title', methods=['POST'])
 @api_auth
+@webhook_event
 def title_create():
     """Create a new patch definition on the server.
 
@@ -199,6 +201,9 @@ def title_create():
 
     db.session.commit()
 
+    g.event_type = 'new_title'
+    g.event = new_title.serialize
+
     if request.args.get('redirect'):
         flash(
             {
@@ -216,6 +221,7 @@ def title_create():
 
 @blueprint.route('/title/<name_id>', methods=['DELETE'])
 @api_auth
+@webhook_event
 def title_delete(name_id):
     """Delete a patch definition on the server.
 
@@ -251,6 +257,10 @@ def title_delete(name_id):
 
     """
     title = lookup_software_title(name_id)
+
+    g.event_type = 'title_deleted'
+    g.event = title.serialize
+
     db.session.delete(title)
     db.session.commit()
 
@@ -395,6 +405,7 @@ def backup_titles():
 
 
 @blueprint.route('/webhooks', methods=['GET', 'POST'])
+@api_auth
 def webhooks():
     if request.method == 'GET':
         results = list()
@@ -408,7 +419,7 @@ def webhooks():
         if not data:
             data = {
                 'url': request.form.get('url', ''),
-                'enabled': bool(request.form.get('enabled', True)),
+                'enabled': bool(request.form.get('enabled')),
                 'send_definition': bool(request.form.get('send_definition'))
             }
 
@@ -483,7 +494,6 @@ def webhooks_delete(webhook_id):
         return redirect(url_for('web_ui.index'))
 
     webhook_url = webhook.url
-    current_app.logger.debug(webhook_url)
 
     db.session.delete(webhook)
     db.session.commit()
