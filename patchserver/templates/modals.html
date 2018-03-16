@@ -18,3 +18,35 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="newWebhookModal" tabindex="-1" role="dialog" aria-labelledby="newWebhookModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Configure a New Webhook</h3>
+            </div>
+            <form method="post" action="/api/v1/webhooks?redirect=true">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="url">URL:</label>
+                        <input type="text" class="form-control" id="url" name="url">
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="1" name="enabled" checked>Enable</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="1" name="verify_ssl" checked>Verify SSL</label>
+                    </div>
+                    <p><i>Enabling "Send Definition" will include the entire patch definition for the software title that triggered the event (this may increase API request times).</i></p>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="1" name="send_definition">Send Definition</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

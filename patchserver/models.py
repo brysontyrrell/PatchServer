@@ -41,6 +41,27 @@ class ApiToken(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class WebhookUrls(db.Model):
+    __tablename__ = 'webhook_urls'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    url = db.Column(db.String(255), unique=True)
+    enabled = db.Column(db.Boolean, default=True)
+    verify_ssl = db.Column(db.Boolean, default=True)
+    send_definition = db.Column(db.Boolean, default=False)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'url': self.url,
+            'enabled': self.enabled,
+            'verify_ssl': self.verify_ssl,
+            'send_definition': self.send_definition
+        }
+
+
 def sorted_criteria(criteria_list):
     sorted_list = sorted(criteria_list, key=itemgetter('index'))
     for item in sorted_list:

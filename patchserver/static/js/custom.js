@@ -105,6 +105,44 @@ function listSoftwareTitles() {
 	});
 }
 
+function listWebhooks() {
+	$.ajax(
+	{
+		type: "GET",
+		url: '../api/v1/webhooks',
+		dataType: "json",
+		cache: false,
+		success: function (data) {
+			if (data.length > 0) {
+				$.each(data, function (i, item) {
+					var table_row = '<tr>' +
+						'<td>' + item.enabled + '</td>' +
+						'<td>' + item.verify_ssl + '</td>' +
+						'<td>' + item.send_definition + '</td>' +
+						'<td>' + item.url + '</td>' +
+                        '<td>' +
+						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
+						'        <span class="glyphicon glyphicon-remove"></span>' +
+						'    </button>' +
+                        '</td>' +
+						'</tr>';
+					$('#webhook-list > tbody:last-child').append(table_row);
+				});
+			} else {
+				var table_row =
+					'<tr><td colspan="7">' +
+					'<h3 style="text-align: center; font-style: italic;">No Webhooks Have Been Configured</h3>' +
+					'</td></tr>';
+				$('#webhook-list > tbody:last-child').append(table_row);
+			}
+		},
+
+		error: function (msg) {
+			alert(msg.responseText);
+		}
+	});
+}
+
 
 //function indexAddPatch() {
 //	var registerForm = $('#addPatchForm');
@@ -142,6 +180,23 @@ function indexDeletePatch(name_id) {
         url: "../api/v1/title/" + name_id + '?redirect=true',
         cache: false,
         success: function (data) {
+            window.location.href = '../';
+        },
+        error: function (e) {
+            console.log("ERROR: ", e);
+            console.log("ERROR MSG: ", e.responseText);
+            window.location.href = '../';
+        }
+    });
+}
+
+function indexDeleteWebhook(id) {
+    $.ajax({
+        type: 'DELETE',
+        url: "../api/v1/webhooks/" + id + '?redirect=true',
+        cache: false,
+        success: function (data) {
+            console.log('SUCCESS');
             window.location.href = '../';
         },
         error: function (e) {

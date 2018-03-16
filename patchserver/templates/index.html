@@ -36,8 +36,37 @@
         </div>
     </div>
 
+    <div class="container-fluid">
+        <div class="col-md-12 main">
+            <h2>
+                <span>Webhooks</span>
+                <div class="pull-right">
+                    <button class="btn-primary btn-xs" data-toggle="modal" data-target="#newWebhookModal">
+                        New Webhook <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table table-striped" id="webhook-list">
+                    <thead>
+                        <tr>
+                            <th>Enabled</th>
+                            <th>Verify SSL</th>
+                            <th>Send Definition</th>
+                            <th>URL</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(listSoftwareTitles);
+        $(document).ready(listWebhooks);
     </script>
 
 {% endblock %}
