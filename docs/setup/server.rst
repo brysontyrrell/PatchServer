@@ -84,6 +84,8 @@ Installation on macOS
 
 The following instructions are for setting up the patch server application on
 a macOS system using ``mod_wsgi-express``.
+The following instructions are for setting up the patch server application on a
+macOS system using ``mod_wsgi-express``.
 
 Create a new directory in your ``/Library`` named ``PatchServer``. Clone the
 project repository to this directory.
