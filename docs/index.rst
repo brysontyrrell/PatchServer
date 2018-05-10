@@ -18,6 +18,11 @@ An open-source implementation of an external patch source for use with Jamf Pro
 
    change_history
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Managing Your Patch Server
+
+   managing/patch_starter
 
 .. toctree::
    :maxdepth: 1
