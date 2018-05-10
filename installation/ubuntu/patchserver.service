@@ -3,7 +3,7 @@ Description=Patch Server daemon
 After=network.target
 
 [Service]
-PIDFile=/run/patchserver/pid
+PIDFile=/run/gunicorn/pid
 User=www-data
 Group=www-data
 RuntimeDirectory=gunicorn

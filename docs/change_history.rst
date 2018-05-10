@@ -1,6 +1,14 @@
 Change History
 --------------
 
+0.7.1 (2018-05-10)
+^^^^^^^^^^^^^^^^^^
+
+Updated documentation including:
+
+- Installation instructions and resources for Ubuntu Server 16.04
+- A new "Managing Your Patch Server" section to help document workflows.
+
 0.7.0 (2018-04-16)
 ^^^^^^^^^^^^^^^^^^
 
