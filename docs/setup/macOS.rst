@@ -21,17 +21,11 @@ Write the following into a new file called ``patch_server.wsgi``:
 
 .. note::
 
-    Grant execute permissions on this file (mode ``755``).
-    This file can be found in the repository at ``installation/macOS/``
+    Grant execute permissions on this file (mode ``755``). This file can be
+    found in the repository at ``installation/macOS/``
 
-.. code-block:: python
-
-    import sys
-    sys.path.insert(0, '/Library/PatchServer/')
-
-    from patchserver.factory import create_app
-
-    application = create_app()
+.. include:: ../../installation/macOS/patch_server.wsgi
+    :code: python
 
 In the Terminal, create a virtual environment within this directory called
 ``venv`` and install the project requirements.
@@ -79,25 +73,8 @@ following launch daemon to ``/Library/LaunchDaemons/com.patchserver.daemon.plist
     This launch daemon should be owned by ``root:wheel`` with mode ``644``.
     This file can be found in the repository at ``installation/macOS/``
 
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-        <dict>
-            <key>Label</key>
-            <string>com.patchserver.daemon</string>
-            <key>ProgramArguments</key>
-            <array>
-                <string>/usr/local/bin/patchserver/apachectl</string>
-                <string>start</string>
-            </array>
-            <key>RunAtLoad</key>
-            <true/>
-            <key>KeepAlive</key>
-            <true/>
-        </dict>
-    </plist>
+.. include:: ../../installation/macOS/com.patchserver.daemon.plist
+    :code: xml
 
 The following file tree shows the locations of all the **required** files and
 resources copied or created during these steps::
