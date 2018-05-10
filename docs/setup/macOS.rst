@@ -1,5 +1,8 @@
-Setup the Patch Server Web Application
-======================================
+Installation on macOS
+---------------------
+
+The following instructions are for setting up the patch server application on a
+macOS system using ``mod_wsgi-express``.
 
 .. warning::
 
@@ -10,80 +13,6 @@ Setup the Patch Server Web Application
 
     You will need to have the ``pip`` and ``virtualenv`` commands installed to
     follow these instructions.
-
-Testing the Patch Server
-------------------------
-
-.. warning::
-
-    Using the included ``run.py`` script is not recommended for a production
-    environment. See the other options below depending upon your platform.
-
-Clone the project repository to the system that will run the application.
-
-Change into the directory for the project, create a Python virtual environment,
-and install the project requirements to it.
-
-.. code-block:: bash
-
-    $ cd /path/to/PatchServer
-    $ virtualenv ./venv
-    $ source ./venv/bin/activate
-    (venv) $ pip install -r ./requirements.txt
-
-Run the application.
-
-.. code-block:: bash
-
-    python run.py
-
-
-You will be able to access the application using ``localhost`` or your
-computer's IP address at port ``5000``.
-
-Running as a Docker Container
------------------------------
-
-In the ``installation/docker/`` directory of the project repository is a
-``Dockerfile`` that can be used to launch the patch server as a container.
-
-Clone the project repository to your computer. Create the Docker image with:
-
-.. code-block:: bash
-
-    $ cd /path/to/PatchServer
-    $ docker build --tag patchserver:latest -f installation/docker/Dockerfile .
-
-If you have Docker installed, you can run the image with:
-
-.. code-block:: bash
-
-    $ docker run -v /<patchserver-data>:/var/lib/patchserver -p 5000:5000 patchserver
-
-.. note::
-
-    Use the ``-d`` option to run the container in the background.
-
-.. note::
-
-    The ``-v /<patchserver-data>:/var/lib/patchserver`` option is to mount a
-    local directory to the path in the running container where the persistent
-    data for the patch server is stored (i.e. the database).
-
-.. warning::
-
-    If you do not attach a volume to ``/var/lib/patchserver`` the database will
-    be erased when the container is stopped and removed.
-
-You will be able to access the application using the IP address of the host
-(your computer's IP address when running Docker locally) at port ``5000``.
-
-
-Installation on macOS
----------------------
-
-The following instructions are for setting up the patch server application on a
-macOS system using ``mod_wsgi-express``.
 
 Create a new directory in your ``/Library`` named ``PatchServer``. Clone the
 project repository to this directory.

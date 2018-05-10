@@ -23,7 +23,9 @@ An open-source implementation of an external patch source for use with Jamf Pro
    :maxdepth: 1
    :caption: Setup Instructions
 
-   setup/server
+   setup/testing
+   setup/docker
+   setup/macOS
    setup/in_jamf_pro
 
 .. toctree::
