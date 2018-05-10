@@ -13,8 +13,8 @@ Install ``git``, ``python``, and ``virtualenv`` on the system:
 
 .. code-block:: bash
 
-    /usr/bin/apt-get update -q
-    /usr/bin/apt-get install -qqy git virtualenv python-minimal
+    sudo /usr/bin/apt-get update -q
+    sudo /usr/bin/apt-get install -qqy git virtualenv python-minimal
 
 Clone the project repository to a temporary directory. ``cd`` into the
 ``installation/ubuntu`` directory.

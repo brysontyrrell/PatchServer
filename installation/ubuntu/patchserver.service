@@ -1,18 +1,22 @@
 [Unit]
-Description = Patch Server
-After = network.target
+Description=Patch Server daemon
+After=network.target
 
 [Service]
-PIDFile = /run/patchserver/patchserver.pid
-User = www-data
-Group = www-data
-WorkingDirectory = /opt/ps
-ExecStartPre = /bin/mkdir /run/patchserver && \
-               /bin/chown -R www-data:www-data /run/patchserver
-ExecStart = /usr/local/patchserver-venv/bin/gunicorn --config /opt/ps/config.py wsgi --pid /run/patchserver/patchserver.pid
-ExecReload = /bin/kill -s HUP $MAINPID
-ExecStop = /bin/kill -s TERM $MAINPID
-ExecStopPost = /bin/rm -rf /run/patchserver
+PIDFile=/run/patchserver/pid
+User=www-data
+Group=www-data
+RuntimeDirectory=gunicorn
+WorkingDirectory=/opt/patchserver
+ExecStart=/usr/local/patchserver-venv/bin/gunicorn \
+    --pid /run/gunicorn/pid \
+    --config /opt/patchserver/config.py \
+    --log-level info \
+    --access-logfile /opt/patchserver/access.log \
+    wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
