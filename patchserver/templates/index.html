@@ -4,63 +4,73 @@
 {% include 'modals.html' %}
 
     <div class="container-fluid">
-        <div class="col-md-12 main">
+        <div class="jumbotron" style="padding: 1rem; margin-bottom: 1rem; margin-top: 1rem;">
             <h2>
-                <span>Software Titles</span>
+                Patch Server
+                <a class="btn btn-info btn-sm pull-right" href="http://patchserver.readthedocs.io/en/latest/" target="_blank" role="button">
+                    Docs <span class="glyphicon glyphicon-book"></span></a>
+            </h2>
+        </div>
+
+        <div class="col-md-12 main">
+
+            <h3>
+                Software Titles
                 <div class="pull-right">
-                    <button class="btn-primary btn-xs" data-toggle="modal" data-target="#newTitleModal">
+                    <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTitleModal">
                         New Title <span class="glyphicon glyphicon-plus"></span>
                     </button>
-                    <button class="btn-success btn-xs" onclick="window.location.href='../api/v1/backup'">
+                    <button class="btn btn-success btn-xs" onclick="window.location.href='../api/v1/backup'">
                         Backup <span class="glyphicon glyphicon glyphicon-download"></span>
                     </button>
                 </div>
-            </h2>
+            </h3>
 
-            <div class="table-responsive">
-                <table class="table table-striped" id="patch-list">
-                    <thead>
-                        <tr>
-                            <th>Patch ID</th>
-                            <th>Name</th>
-                            <th>Publisher</th>
-                            <th>Current Version</th>
-                            <th>Last Modified</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+
+            <table class="table table-striped" id="patch-list">
+                <thead>
+                    <tr>
+                        <th>Patch ID</th>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Publisher</th>
+                        <th>Current Version</th>
+                        <th></th>
+                        <th>Last Modified</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
         </div>
-    </div>
 
-    <div class="container-fluid">
+         <br>
+
         <div class="col-md-12 main">
-            <h2>
-                <span>Webhooks</span>
+
+            <h3>
+                Webhooks
                 <div class="pull-right">
-                    <button class="btn-primary btn-xs" data-toggle="modal" data-target="#newWebhookModal">
+                    <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newWebhookModal">
                         New Webhook <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </div>
-            </h2>
+            </h3>
 
-            <div class="table-responsive">
-                <table class="table table-striped" id="webhook-list">
-                    <thead>
-                        <tr>
-                            <th>Enabled</th>
-                            <th>Verify SSL</th>
-                            <th>Send Definition</th>
-                            <th>URL</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <table class="table table-striped" id="webhook-list">
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Verify SSL</th>
+                        <th>Send Definition</th>
+                        <th>Enabled</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
         </div>
     </div>
 
