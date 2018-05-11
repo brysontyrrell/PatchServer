@@ -19,6 +19,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="titleVersionModal" tabindex="-1" role="dialog" aria-labelledby="titleVersionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Version: <label id="titleVersionModalName"></label></h3>
+            </div>
+            <form id="titleVersionModalForm" method="post" action="" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="file" class="filestyle" name="file" accept="application/json" data-buttonText="&ensp;Choose File" required/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="newWebhookModal" tabindex="-1" role="dialog" aria-labelledby="newWebhookModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

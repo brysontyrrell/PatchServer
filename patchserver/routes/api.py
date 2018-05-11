@@ -271,7 +271,7 @@ def title_delete(name_id):
                 'message': name_id
             },
             'success')
-        return redirect(url_for('web_ui.index'), 303)
+        return redirect(url_for('web_ui.index'))
     else:
         return jsonify({}), 204
 
@@ -290,44 +290,34 @@ def title_versions(name_id):
         POST /api/v1/title/Composer/version HTTP/1.1
         Content-Type: application/json
 
-        {
-            "items": [
-                {
-                    "version": "10.1.1",
-                    "releaseDate": "2017-12-20T10:08:38.270Z",
-                    "standalone": true,
-                    "minimumOperatingSystem": "10.9",
-                    "reboot": false,
-                    "killApps": [
-                        {
-                            "bundleId": "com.jamfsoftware.Composer",
-                            "appName": "Composer.app"
-                        }
-                    ],
-                    "components": [
-                        {
-                            "name": "Composer",
-                            "version": "10.1.1",
-                            "criteria": ["requirementsObjects"]
-                        }
-                    ],
-                    "capabilities": ["requirementsObjects"],
-                    "dependencies": []
-                }
-            ]
-        }
+            {
+                "version": "10.1.1",
+                "releaseDate": "2017-12-20T10:08:38.270Z",
+                "standalone": true,
+                "minimumOperatingSystem": "10.9",
+                "reboot": false,
+                "killApps": [
+                    {
+                        "bundleId": "com.jamfsoftware.Composer",
+                        "appName": "Composer.app"
+                    }
+                ],
+                "components": [
+                    {
+                        "name": "Composer",
+                        "version": "10.1.1",
+                        "criteria": ["requirementsObjects"]
+                    }
+                ],
+                "capabilities": ["requirementsObjects"],
+                "dependencies": []
+            }
 
     .. note::
 
         The JSON schema for a patch definition can be found in the project
         repository at:
         ``patchserver/routes/validator/schema_version.json``
-
-    .. warning::
-
-        You may pass multiple version objects in the ``items`` array to this
-        endpoint. You must arrange these objects in descending order of the
-        version to be written to the patch definition correctly!
 
     **Example Response:**
 
@@ -356,21 +346,36 @@ def title_versions(name_id):
         }
 
     """
-    title = lookup_software_title(name_id)
     data = request.get_json()
+    if not data:
+        try:
+            data = json.load(request.files['file'])
+        except ValueError:
+            raise InvalidPatchDefinitionError('No JSON data could be found.')
 
-    for version in data['items']:
-        validate_json(version, 'version')
-        if version['version'] in [patch.version for patch in title.patches]:
-            return jsonify(
-                {'database_conflict': 'The provided version already exists '
-                                      'for this software title.'}
-            ), 409
+    validate_json(data, 'version')
 
-    create_patch_objects(data['items'], software_title=title)
+    title = lookup_software_title(name_id)
+    if data['version'] in [patch.version for patch in title.patches]:
+        return jsonify(
+            {'database_conflict': 'The provided version already exists '
+                                  'for this software title.'}
+        ), 409
+
+    create_patch_objects([data], software_title=title)
     db.session.commit()
 
-    return jsonify({}), 201
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Software title version updated',
+                'message': 'View at <a href="{0}">{0}</a>'.format(
+                    url_for('jamf_pro.patch_by_name_id', name_id=name_id))
+            },
+            'success')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify({}), 201
 
 
 @blueprint.route('/backup')
@@ -505,6 +510,6 @@ def webhooks_delete(webhook_id):
                 'message': webhook_url
             },
             'success')
-        return redirect(url_for('web_ui.index'), 303)
+        return redirect(url_for('web_ui.index'))
     else:
         return jsonify({}), 204

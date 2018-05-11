@@ -87,8 +87,9 @@ function listSoftwareTitles() {
                 "orderable": false,
                 "data": "id",
                 "render": function ( data, type, row, meta ) {
-                    return '<button id="' + data + '" class="btn btn-success btn-xs" onclick="">' +
-						    '<span class="glyphicon glyphicon-chevron-up"></span></button>';
+                    return '<button class="btn btn-success btn-xs" data-toggle="modal" data-target="#titleVersionModal"' +
+                           'onclick="document.getElementById(\'titleVersionModalName\').innerHTML=\'' + data + '\'; document.getElementById(\'titleVersionModalForm\').action=\'/api/v1/title/' + data + '/version?redirect=true\'">' +
+                           '<span class="glyphicon glyphicon-chevron-up"></span></button>';
                 }
             },
             { "targets": 6, "data": "lastModified" },
