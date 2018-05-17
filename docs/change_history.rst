@@ -1,6 +1,53 @@
 Change History
 --------------
 
+0.8.0 (2018-05-11)
+^^^^^^^^^^^^^^^^^^
+
+Update a title's version from the UI.
+
+**This updated contains a breaking API change!** Previously, the
+``/api/v1/title/<title>/version`` endpoint required JSON provided in the
+following format:
+
+.. code-block:: json
+
+    {
+        "Items": [
+            {
+                "version": "",
+                "releaseDate": "",
+                "standalone": true,
+                "minimumOperatingSystem": "",
+                "reboot": false,
+                "killApps": [],
+                "components": [],
+                "capabilities": [],
+                "dependencies": []
+            }
+        ]
+    }
+
+The intent was to allow multiple versions to be posted at once (the underlying
+``create_patch_objects`` function takes a list of patches), but for easier use
+and consistency with how the CommunityPatch API operates this has been changed.
+
+The endpoint will now expect only the JSON of the version itself:
+
+.. code-block:: json
+
+    {
+        "version": "",
+        "releaseDate": "",
+        "standalone": true,
+        "minimumOperatingSystem": "",
+        "reboot": false,
+        "killApps": [],
+        "components": [],
+        "capabilities": [],
+        "dependencies": []
+    }
+
 0.7.1 (2018-05-10)
 ^^^^^^^^^^^^^^^^^^
 

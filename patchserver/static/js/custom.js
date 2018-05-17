@@ -56,91 +56,87 @@ function ConvertTimestamp(timestamp) {
  * Functions for index.html
  */
 function listSoftwareTitles() {
-	$.ajax(
-	{
-		type: "GET",
-		url: '../jamf/v1/software',
-		dataType: "json",
-		cache: false,
-		success: function (data) {
-			data.sort(compare);
-			if (data.length > 0) {
-				$.each(data, function (i, item) {
-					var date = new Date(item.lastModified);
-					var options = {
-						weekday: "long", year: "numeric", month: "short",
-						day: "numeric", hour: "2-digit", minute: "2-digit"
-					};
-					var table_row = '<tr>' +
-						'<td>' + item.id + '</td>' +
-						'<td>' + item.name + '</td>' +
-						'<td>' + item.publisher + '</td>' +
-						'<td>' + item.currentVersion + '</td>' +
-						'<td>' + date.toLocaleString('en-us', options) + '</td>' +
-						'<td>' +
-						'    <button class="btn-info btn-xs" onclick="window.location.href=\'../jamf/v1/patch/' + item.id + '\'">' +
-						'        <span class="glyphicon glyphicon-eye-open"></span>' +
-						'    </button>' +
-						'</td>' +
-                        '<td>' +
-						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeletePatch(this.id)">' +
-						'        <span class="glyphicon glyphicon-remove"></span>' +
-						'    </button>' +
-                        '</td>' +
-						'</tr>';
-					$('#patch-list > tbody:last-child').append(table_row);
-				});
-			} else {
-				var table_row =
-					'<tr><td colspan="7">' +
-					'<h3 style="text-align: center; font-style: italic;">No Patch Definitions Found</h3>' +
-					'</td></tr>';
-				$('#patch-list > tbody:last-child').append(table_row);
-			}
-		},
 
-		error: function (msg) {
-			alert(msg.responseText);
-		}
-	});
+    $('#patch-list').DataTable({
+        "paging": false,
+        "searching": false,
+        "bInfo": false,
+        "language": {
+            "zeroRecords": "No Patch Definitions Found"
+        },
+        "ajax": {
+            "url": "jamf/v1/software",
+            "dataSrc": ""
+        },
+        "columnDefs": [
+            { "targets": 0, "data": "id" },
+            {
+                "targets": 1,
+                "orderable": false,
+                "data": "id",
+                "render": function ( data, type, row, meta ) {
+                    return '<button class="btn btn-info btn-xs" onclick="window.location.href=\'../jamf/v1/patch/' + data + '\'">' +
+                           '<span class="glyphicon glyphicon-eye-open"></span></button>';
+                }
+            },
+            { "targets": 2, "orderable": false, "data": "name" },
+            { "targets": 3, "data": "publisher" },
+            { "targets": 4, "data": "currentVersion" },
+            {
+                "targets": 5,
+                "orderable": false,
+                "data": "id",
+                "render": function ( data, type, row, meta ) {
+                    return '<button class="btn btn-success btn-xs" data-toggle="modal" data-target="#titleVersionModal"' +
+                           'onclick="document.getElementById(\'titleVersionModalName\').innerHTML=\'' + data + '\'; document.getElementById(\'titleVersionModalForm\').action=\'/api/v1/title/' + data + '/version?redirect=true\'">' +
+                           '<span class="glyphicon glyphicon-chevron-up"></span></button>';
+                }
+            },
+            { "targets": 6, "data": "lastModified" },
+            {
+                "targets": 7,
+                "orderable": false,
+                "data": "id",
+                "render": function ( data, type, row, meta ) {
+                    return '<button id="' + data + '" class="btn btn-danger btn-xs" onclick="indexDeletePatch(this.id)">' +
+						    '<span class="glyphicon glyphicon-remove"></span></button>';
+                }
+            }
+        ]
+    });
+
 }
 
 function listWebhooks() {
-	$.ajax(
-	{
-		type: "GET",
-		url: '../api/v1/webhooks',
-		dataType: "json",
-		cache: false,
-		success: function (data) {
-			if (data.length > 0) {
-				$.each(data, function (i, item) {
-					var table_row = '<tr>' +
-						'<td>' + item.enabled + '</td>' +
-						'<td>' + item.verify_ssl + '</td>' +
-						'<td>' + item.send_definition + '</td>' +
-						'<td>' + item.url + '</td>' +
-                        '<td>' +
-						'    <button id="' + item.id + '" class="btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
-						'        <span class="glyphicon glyphicon-remove"></span>' +
-						'    </button>' +
-                        '</td>' +
-						'</tr>';
-					$('#webhook-list > tbody:last-child').append(table_row);
-				});
-			} else {
-				var table_row =
-					'<tr><td colspan="7">' +
-					'<h3 style="text-align: center; font-style: italic;">No Webhooks Have Been Configured</h3>' +
-					'</td></tr>';
-				$('#webhook-list > tbody:last-child').append(table_row);
-			}
-		},
 
-		error: function (msg) {
-			alert(msg.responseText);
-		}
-	});
+	$('#webhook-list').DataTable({
+        "paging": false,
+        "searching": false,
+        "bInfo": false,
+        "language": {
+            "zeroRecords": "No Webhooks Have Been Configured"
+        },
+        "ajax": {
+            "url": "api/v1/webhooks",
+            "dataSrc": ""
+        },
+        "columnDefs": [
+            { "targets": 0, "data": "url" },
+            { "targets": 1, "orderable": false, "data": "verify_ssl" },
+            { "targets": 2, "orderable": false, "data": "send_definition" },
+            { "targets": 3, "data": "enabled" },
+            {
+                "targets": 4,
+                "orderable": false,
+                "data": "id",
+                "render": function ( data, type, row, meta ) {
+                    return '<button id="' + data + '" class="btn btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
+						    '<span class="glyphicon glyphicon-remove"></span></button>';
+                }
+            }
+        ]
+    });
+
 }
 
 

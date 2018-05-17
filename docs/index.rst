@@ -57,12 +57,12 @@ Upload a New Software Title
 Click the **New Title** button to bring up the file selector. Browse for the
 JSON file of the patch definition and then click **Upload**.
 
-.. image:: _static/gui_02_upload.png
+.. image:: _static/gui_02_new_title.png
    :align: center
 
 You will recieve a confirmation of a successful upload.
 
-.. image:: _static/gui_03_created.png
+.. image:: _static/gui_03_title_created.png
    :align: center
 
 Upload Errors
@@ -73,40 +73,47 @@ a notification with the reason so you can correct the cause and retry.
 
 There is a conflict with an existing software title.
 
-.. image:: _static/gui_04_conflict.png
+.. image:: _static/gui_04_title_conflict.png
    :align: center
 
 The patch definition failed validation, but the cause is displayed.
 
-.. image:: _static/gui_05_validation.png
+.. image:: _static/gui_05_title_error.png
    :align: center
 
-View a Patch Definition
-^^^^^^^^^^^^^^^^^^^^^^^
+Update a Title's Version
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-Click the blue **View** icon for a software title to be taken to the URL of the
-patch definition JSON.
+Click the green **Up** icon for a title to display a file prompt. Select the
+JSON file containing the new version data and submit it.
 
-.. image:: _static/gui_10_view.png
+.. image:: _static/gui_06_title_update.png
    :align: center
 
-Delete a Software Title
-^^^^^^^^^^^^^^^^^^^^^^^
+You will receive a confirmation of a successful upload.
 
-Click the red **X** button for a software title to delete it.
+.. image:: _static/gui_07_title_updated.png
+   :align: center
+
+You will also receive similar feedback for errors as with creating new titles.
+
+Other Title Actions
+^^^^^^^^^^^^^^^^^^^
+
+There are additional actions available for each software title.
+
+- The blue **View** icon will take you to the URL of the patch definition JSON.
+- The red **X** icon will delete the title from the server.
+
+.. image:: _static/gui_08_actions.png
+   :align: center
 
 .. warning::
 
-   This action cannot be undone.
+   The delete action cannot be undone.
 
-.. image:: _static/gui_08_delete.png
-   :align: center
-
-.. image:: _static/gui_09_deleted.png
-   :align: center
-
-Backup Your Patch Definitions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Backup Patch Definitions
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Click the **Backup** button and you will download a zipped archive of all patch
 definitions for all your software titles.
@@ -116,10 +123,7 @@ definitions for all your software titles.
    This is a feature of the API that you can use with automation for scheduled
    backups of the server.
 
-.. image:: _static/gui_06_backup.png
-   :align: center
-
-.. image:: _static/gui_07_archive.png
+.. image:: _static/gui_09_backups.png
    :align: center
 
 Webhooks
