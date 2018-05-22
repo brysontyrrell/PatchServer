@@ -1,6 +1,12 @@
 Change History
 --------------
 
+0.8.1 (2018-05-21)
+^^^^^^^^^^^^^^^^^^
+
+macOS quick install script. Updated daemon (removed ``KeepAlive``). Updated
+documentation on managing the server using the Apache scripts.
+
 0.8.0 (2018-05-11)
 ^^^^^^^^^^^^^^^^^^
 
