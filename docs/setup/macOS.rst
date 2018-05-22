@@ -14,85 +14,53 @@ macOS system using ``mod_wsgi-express``.
     You will need to have the ``pip`` and ``virtualenv`` commands installed to
     follow these instructions.
 
-Create a new directory in your ``/Library`` named ``PatchServer``. Clone the
-project repository to this directory.
+    .. code-block:: bash
 
-Write the following into a new file called ``patch_server.wsgi``:
+        $ sudo easy_install pip
+        $ sudo pip install virtualenv
 
 .. note::
 
-    Grant execute permissions on this file (mode ``755``). This file can be
-    found in the repository at ``installation/macOS/``
+    You will need the full Xcode application on the host Mac in order to install
+    ``mod_wsgi``. You can download Xcode from the Mac App Store.
 
-.. include:: ../../installation/macOS/patch_server.wsgi
-    :code: python
-
-In the Terminal, create a virtual environment within this directory called
-``venv`` and install the project requirements.
+Clone the project repository to a temporary directory. ``cd`` into the
+``installation/macOS`` directory.
 
 .. code-block:: bash
 
-    $ cd /Library/PatchServer
-    $ virtualenv ./venv
-    $ source ./venv/bin/activate
-    (venv) $ pip install -r ./requirements.txt
+    git clone https://github.com/brysontyrrell/PatchServer.git /tmp/patchserver
+    cd /tmp/patchserver/installation/macOS
 
-Now install ``mod_wsgi`` into the environment (this process may take several
-minutes):
+Run the ``quick_install.sh``.
 
-.. code-block:: bash
+Once the script has successfully completed, you will be able to access the
+application using ``localhost`` or the system's IP address at port ``5000``.
 
-    (venv) $ pip install mod_wsgi
+.. note::
 
-Change the ownership of the ``/Library/PatchServer`` directory to the ``_www``
-user and group (the server will be run as this user and **must** have read/write
-access to this directory):
+    The LaunchDaemon provided will start the patch server on boot.
 
-.. code-block:: bash
+Contents of ``quick_install.sh``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    $ sudo chown -R _www:_www /Library/PatchServer
+.. include:: ../../installation/macOS/quick_install.sh
+    :code: shell
 
-Now, in a new Terminal window in ``/Library/PatchServer``, create a command line
-utility to run and manage the apache server with:
+Managing the Apache Server
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: bash
-
-    $ sudo venv/bin/mod_wsgi-express setup-server patch_server.wsgi --port=5000 --user _www --group _www --server-root=/usr/local/bin/patchserver
-
-You can now launch the application using the following command:
+Start the server:
 
 .. code-block:: bash
 
     $ sudo /usr/local/bin/patchserver/apachectl start
 
-To launch the patch server automatically when the system boots, write the
-following launch daemon to ``/Library/LaunchDaemons/com.patchserver.daemon.plist``.
+Stop the server:
 
-.. note::
+.. code-block:: bash
 
-    This launch daemon should be owned by ``root:wheel`` with mode ``644``.
-    This file can be found in the repository at ``installation/macOS/``
+    $ sudo /usr/local/bin/patchserver/apachectl stop
 
-.. include:: ../../installation/macOS/com.patchserver.daemon.plist
-    :code: xml
-
-The following file tree shows the locations of all the **required** files and
-resources copied or created during these steps::
-
-    /
-    ├── Library/
-    │   ├── PatchServer/                         <-- Owned by _www:_www
-    │   │   ├── venv/                            <-- Python virtual environment
-    │   │   ├── patchserver/                     <-- Application dir from GitHub
-    │   │   ├── patch_server.wsgi
-    │   │   └── requirements.txt
-    │   └── LaunchDaemons/
-    │       └── com.patchserver.daemon.plist
-    └── usr/
-        └── local/
-            └── bin/
-                └── patchserver/                 <-- Apache server utilities
-
-
-You will be able to access the application using ``localhost`` or your
-computer's IP address at port ``5000``.
+If the server does not start, check the ``/usr/local/bin/patchserver/error_log``
+file for error messages.
