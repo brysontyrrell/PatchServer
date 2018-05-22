@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#!/bin/bash
+echo "Checking prerequisites..."
 
 if [[ ! -e /Applications/Xcode.app ]]; then
     echo "Xcode.app is required to install Patch Server"
@@ -40,6 +40,7 @@ ${APP_DIR}/venv/bin/mod_wsgi-express \
     --port=5000 \
     --user _www \
     --group _www \
+    --working-directory ${APP_DIR} \
     --server-root=/usr/local/bin/patchserver
 
 echo "Copying LaunchDaemon..."
