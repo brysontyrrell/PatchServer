@@ -23,6 +23,7 @@ An open-source implementation of an external patch source for use with Jamf Pro
    :caption: Managing Your Patch Server
 
    managing/patch_starter
+   managing/troubleshooting
 
 .. toctree::
    :maxdepth: 1

@@ -31,5 +31,5 @@ for an application and then add it to an existing title on the patch server:
 
     curl http://localhost:5000/api/v1/title/GitHubDesktop/version \
         -X POST \
-        -d "{$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" \
+        -d "$(python patchstarter.py /Applications/GitHub\ Desktop.app -p "GitHub" --patch-only)" \
         -H 'Content-Type: application/json'

@@ -136,14 +136,7 @@ def software_titles_select(name_ids):
     title_list = SoftwareTitle.query.filter(
         sqlalchemy.or_(SoftwareTitle.id_name.in_(name_id_list))).all()
 
-    not_found = [name for name in name_id_list
-                 if name not in
-                 [title.id_name for title in title_list]]
-    if not_found:
-        raise SoftwareTitleNotFound(not_found)
-    else:
-        return jsonify(
-            [title.serialize_short for title in title_list]), 200
+    return jsonify([title.serialize_short for title in title_list]), 200
 
 
 @blueprint.route('/patch/<name_id>')

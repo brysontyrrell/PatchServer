@@ -1,6 +1,18 @@
 Change History
 --------------
 
+0.8.2 (2018-06-05)
+^^^^^^^^^^^^^^^^^^
+
+Fixed an issue where a mismatched or non-existing software title ID passed to
+``/jamf/v1/software/<Title>,<Title>`` would result in a 404 error response.
+
+The expected behavior is the invalid title ID to be omitted from the results
+(this is the behavior of both the official Jamf patch feed and CommunityPatch).
+
+Added documentation to describe resources for troubleshooting issues between
+Jamf Pro and a Patch Server.
+
 0.8.1 (2018-05-21)
 ^^^^^^^^^^^^^^^^^^
 
