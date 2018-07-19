@@ -415,8 +415,7 @@ def restore_titles():
     may only be used when no definitions exist. If definitions have been created
     the restore request will be rejected.
 
-    .. :quickref: Restore; Restore definitions from a zipped archive of software
-        titles.
+    .. :quickref: Backup; Restore definitions from a zipped archive of software titles.
 
     **Example Request:**
 
@@ -451,8 +450,9 @@ def restore_titles():
     **Error Responses**
 
     A ``400`` status can be returned if a file other than a zip archive is
-    submitted, or if a validation error occurs when processing the unzipped
-    definitions.
+    submitted, if a validation error occurs when processing the unzipped
+    definitions, or if the request was made after definitions have been already
+    created.
 
     .. sourcecode:: http
 
@@ -471,9 +471,6 @@ def restore_titles():
         {
             "restore_failure": "A definition in the archive failed validation"
         }
-
-    A ``403`` status can be returned if the request was made after definitions
-    have been already created.
 
     .. sourcecode:: http
 
