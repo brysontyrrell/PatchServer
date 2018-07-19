@@ -3,7 +3,7 @@ import os
 
 from jsonschema import validate, ValidationError
 
-from ...exc import InvalidPatchDefinitionError
+from patchserver.exc import InvalidPatchDefinitionError
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

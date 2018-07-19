@@ -1,8 +1,8 @@
 from flask import blueprints, render_template, request, url_for
 from werkzeug.contrib.atom import AtomFeed
 
-from .. import __version__
-from ..models import SoftwareTitle
+from patchserver import __version__
+from patchserver.models import SoftwareTitle
 
 blueprint = blueprints.Blueprint('web_ui', __name__)
 

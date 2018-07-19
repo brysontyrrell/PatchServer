@@ -2,8 +2,8 @@ import functools
 
 from flask import current_app, request
 
-from ..exc import Unauthorized
-from ..models import ApiToken
+from patchserver.exc import Unauthorized
+from patchserver.models import ApiToken
 
 
 def api_auth(func):

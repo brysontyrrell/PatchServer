@@ -1,9 +1,8 @@
 from flask import blueprints, jsonify
 import sqlalchemy
 
-from .api_operations import lookup_software_title
-from ..exc import SoftwareTitleNotFound
-from ..models import SoftwareTitle
+from patchserver.models import SoftwareTitle
+from patchserver.routes.api_operations import lookup_software_title
 
 blueprint = blueprints.Blueprint('jamf_pro', __name__, url_prefix='/jamf/v1')
 
