@@ -16,3 +16,7 @@ class SoftwareTitleNotFound(PatchServerException):
 
 class InvalidWebhook(PatchServerException):
     pass
+
+
+class PatchArchiveRestoreFailure(PatchServerException):
+    pass
