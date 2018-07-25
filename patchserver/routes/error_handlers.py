@@ -1,9 +1,18 @@
-from flask import blueprints, current_app, flash, jsonify, redirect, request, url_for
+from flask import (
+    blueprints,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    request,
+    url_for
+)
 from sqlalchemy.exc import IntegrityError
 
-from ..exc import (
+from patchserver.exc import (
     InvalidPatchDefinitionError,
     InvalidWebhook,
+    PatchArchiveRestoreFailure,
     SoftwareTitleNotFound,
     Unauthorized
 )
@@ -91,3 +100,19 @@ def database_integrity_error(err):
         return redirect(url_for('web_ui.index'))
     else:
         return jsonify({'database_conflict': message}), 409
+
+
+@blueprint.app_errorhandler(PatchArchiveRestoreFailure)
+def archive_restore_failure(err):
+    current_app.logger.error(err.message)
+
+    if request.args.get('redirect'):
+        flash(
+            {
+                'title': 'Unable to Restore Patch Archive',
+                'message': err.message
+            },
+            'warning')
+        return redirect(url_for('web_ui.index'))
+    else:
+        return jsonify({'restore_failure': err.message}), 400

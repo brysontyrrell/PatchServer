@@ -1,6 +1,14 @@
 Change History
 --------------
 
+0.8.3 (2018-07-18)
+^^^^^^^^^^^^^^^^^^
+
+Implemented restoring a patch archive backup via a new ``/api/v1/restore``
+endpoint.
+
+Switched from relative to absolute imports in code.
+
 0.8.2 (2018-06-05)
 ^^^^^^^^^^^^^^^^^^
 

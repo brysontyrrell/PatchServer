@@ -1,11 +1,10 @@
 from flask import Flask
 import logging
-import os
 
-from . import config
-from .database import db
-from .routes import api, error_handlers, jamf_pro, web_ui
-from .utilities import reset_api_token
+from patchserver import config
+from patchserver.database import db
+from patchserver.routes import api, error_handlers, jamf_pro, web_ui
+from patchserver.utilities import reset_api_token
 
 
 def register_blueprints(app):

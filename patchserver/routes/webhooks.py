@@ -4,8 +4,7 @@ import time
 from flask import current_app, g, url_for
 import requests
 
-from ..exc import Unauthorized
-from ..models import WebhookUrls
+from patchserver.models import WebhookUrls
 
 
 def webhook_event(func):

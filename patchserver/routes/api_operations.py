@@ -7,8 +7,8 @@ import tempfile
 import shutil
 import zipfile
 
-from ..database import db
-from ..models import (
+from patchserver.database import db
+from patchserver.models import (
     Criteria,
     ExtensionAttribute,
     Patch,
@@ -19,7 +19,12 @@ from ..models import (
     SoftwareTitle,
     SoftwareTitleCriteria
 )
-from ..exc import SoftwareTitleNotFound
+from patchserver.exc import (
+    InvalidPatchDefinitionError,
+    PatchArchiveRestoreFailure,
+    SoftwareTitleNotFound
+)
+from patchserver.routes.validator import validate_json
 
 
 def lookup_software_title(name_id):
@@ -37,6 +42,32 @@ def get_last_index_value(model, model_attribute, filter_arg):
         model.index.desc()).first()
 
     return result[0] if result else 0
+
+
+def create_title(data):
+    new_title = SoftwareTitle(
+        id_name=data['id'],
+        name=data['name'],
+        publisher=data['publisher'],
+        app_name=data['appName'],
+        bundle_id=data['bundleId']
+    )
+    db.session.add(new_title)
+
+    if data.get('requirements'):
+        create_criteria_objects(
+            data['requirements'], software_title=new_title)
+
+    if data.get('patches'):
+        create_patch_objects(
+            list(reversed(data['patches'])), software_title=new_title)
+
+    if data.get('extensionAttributes'):
+        create_extension_attributes(
+            data['extensionAttributes'], new_title)
+
+    db.session.commit()
+    return new_title
 
 
 def create_criteria_objects(criteria_list, software_title=None,
@@ -198,5 +229,41 @@ def create_backup_archive():
             )
 
     shutil.rmtree(tempdir)
-
     return archive_path
+
+
+def restore_backup_archive(uploaded_archive):
+    if os.path.splitext(uploaded_archive.filename)[-1] != '.zip':
+        raise PatchArchiveRestoreFailure(
+            'The submitted file is not a .zip archive')
+
+    if len(SoftwareTitle.query.all()) != 0:
+        raise PatchArchiveRestoreFailure(
+            'Definitions already exist on this server')
+
+    definitions_to_restore = list()
+
+    with zipfile.ZipFile(uploaded_archive, 'r') as zip_file:
+        for file_ in zip_file.namelist():
+            data = json.loads(zip_file.read(file_))
+
+            try:
+                validate_json(data, 'patch')
+            except InvalidPatchDefinitionError:
+                raise PatchArchiveRestoreFailure(
+                    'A definition in the archive failed validation')
+
+            definitions_to_restore.append(data)
+
+    saved_definitions = list()
+
+    for definition in definitions_to_restore:
+        saved_def = create_title(definition)
+        saved_definitions.append(
+            {
+                "database_id": saved_def.id,
+                "id": saved_def.id_name
+            }
+        )
+
+    return saved_definitions

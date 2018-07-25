@@ -2,8 +2,8 @@ import os
 
 from flask import current_app
 
-from ..database import db
-from ..models import ApiToken
+from patchserver.database import db
+from patchserver.models import ApiToken
 
 
 def reset_api_token():

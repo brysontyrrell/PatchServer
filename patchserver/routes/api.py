@@ -3,7 +3,6 @@ from urlparse import urlparse
 
 from flask import (
     blueprints,
-    current_app,
     flash,
     g,
     jsonify,
@@ -13,19 +12,20 @@ from flask import (
     url_for
 )
 
-from .api_operations import (
+from patchserver.database import db
+from patchserver.exc import InvalidPatchDefinitionError, InvalidWebhook
+from patchserver.models import ApiToken, SoftwareTitle, WebhookUrls
+from patchserver.routes.api_operations import (
     create_criteria_objects,
     create_extension_attributes,
     create_patch_objects,
     lookup_software_title,
-    create_backup_archive
+    create_backup_archive,
+    restore_backup_archive
 )
-from .auth import api_auth
-from .validator import validate_json
-from .webhooks import webhook_event
-from ..database import db
-from ..exc import InvalidPatchDefinitionError, InvalidWebhook
-from ..models import ApiToken, SoftwareTitle, WebhookUrls
+from patchserver.routes.auth import api_auth
+from patchserver.routes.validator import validate_json
+from patchserver.routes.webhooks import webhook_event
 
 blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -407,6 +407,84 @@ def backup_titles():
     return send_file(
         archive, as_attachment=True, attachment_filename='patch_archive.zip'
     ), 200
+
+
+@blueprint.route('/restore', methods=['POST'])
+def restore_titles():
+    """Restore a zipped archive of definitions to the server. This endpoint
+    may only be used when no definitions exist. If definitions have been created
+    the restore request will be rejected.
+
+    .. :quickref: Backup; Restore definitions from a zipped archive of software titles.
+
+    **Example Request:**
+
+    .. sourcecode:: http
+
+        POST /api/v1/restore HTTP/1.1
+        Content-Type: application/zip
+
+        <patch_archive.zip>
+
+    **Example Response:**
+
+    A successful response will return a ``201`` status and a JSON object
+    containing the software title IDs and their database IDs.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 201 Created
+        Content-Type: application/json
+
+        [
+            {
+                "database_id": 1,
+                "id": "Composer"
+            },
+            {
+                "database_id": 2,
+                "id": "JamfImaging"
+            }
+        ]
+
+    **Error Responses**
+
+    A ``400`` status can be returned if a file other than a zip archive is
+    submitted, if a validation error occurs when processing the unzipped
+    definitions, or if the request was made after definitions have been already
+    created.
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "restore_failure": "The submitted file is not a .zip archive"
+        }
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "restore_failure": "A definition in the archive failed validation"
+        }
+
+    .. sourcecode:: http
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+
+        {
+            "restore_failure": "Definitions already exist on this server"
+        }
+
+    """
+    uploaded_file = request.files['file']
+    restored_definitions = restore_backup_archive(uploaded_file)
+    return jsonify(restored_definitions), 201
 
 
 @blueprint.route('/webhooks', methods=['GET', 'POST'])

@@ -7,7 +7,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from .database import db
+from patchserver.database import db
 
 
 @event.listens_for(Engine, "connect")
