@@ -26,8 +26,8 @@ function bailout() {
 /usr/local/patchserver-venv/bin/pip install futures gunicorn -r /opt/patchserver/requirements.txt
 
 # Enable and start the service
-/bin/systemctl enable patchserver.service
-/bin/systemctl start patchserver.service
+/usr/bin/systemctl enable patchserver.service
+/usr/bin/systemctl start patchserver.service
 
 # Verify the service has started
-/bin/systemctl status patchserver.service
+/usr/bin/systemctl status patchserver.service
