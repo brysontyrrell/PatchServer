@@ -1,4 +1,4 @@
-Installation on RHEL Server (7.3)
+Installation on RHEL Server (7.5)
 -------------------------------------
 
 The following instructions are for setting up the patch server application on an
@@ -67,7 +67,7 @@ Install Nginx on the system:
 .. code-block:: bash
 
     sudo /bin/yum update -q
-    sudo /bin/yum install -qqy nginx
+    sudo /bin/yum install -y nginx
 
 Remove the default Nginx site:
 
