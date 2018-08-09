@@ -2,29 +2,26 @@ Installation on RHEL Server (7.3)
 -------------------------------------
 
 The following instructions are for setting up the patch server application on an
-RHEL 7.3 system using ``gunicorn`` and ``systemd``.
+RHEL 7.5 system using ``gunicorn`` and ``systemd``.
 
 .. warning::
 
     These instructions do not cover securing your patch server with a TLS
     certificate for HTTPS connections.
 
-Install ``git``, ``python``, ``httpd``, and ``pip`` on the system:
+Enable EPEL repository if needed:
+
+.. code-block:: bash
+
+    wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo rpm -ivh epel-release-latest-7.noarch.rpm
+
+Install ``git``, ``httpd``, and ``pip`` on the system:
 
 .. code-block:: bash
 
     sudo /bin/yum update -q
-    sudo /bin/yum install -qqy git python-minimal httpd epel-release python-pip python-wheel
-
-Make sure ``pip`` is up to date:
-
-.. code-block:: bash
-    sudo pip install -U pip
-
-Install ``virtualenv``:
-
-..code-block:: bash
-    sudo pip install
+    sudo /bin/yum install -y git httpd python-pip python-wheel python-virtualenv
 
 Clone the project repository to a temporary directory. ``cd`` into the
 ``installation/rhel`` directory.
@@ -103,4 +100,3 @@ Restart ``nginx`` for the changes to take effect:
 You should now be able to access the application using the IP address of the
 system at port ``80`` (this is the default HTTP port and you do not need to
 include it with the URL).
-
