@@ -20,7 +20,6 @@ def reset_api_token():
         db.session.delete(token)
         db.session.commit()
 
-    current_app.config.pop('RESET_API_TOKEN')
+    current_app.config.pop("RESET_API_TOKEN")
     current_app.logger.info("Removing 'reset_api_token' stub")
-    os.remove(os.path.join(
-        current_app.config['APP_DIR'], 'reset_api_token'))
+    os.remove(os.path.join(current_app.config["APP_DIR"], "reset_api_token"))
