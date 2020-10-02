@@ -41,6 +41,12 @@ Run a container with the following command:
 You will be able to access the application using the IP address of the host
 (your computer's IP address when running Docker locally) at port ``5000``.
 
+Performance
+^^^^^^^^^^^
+
+The application, by default, runs 2 worker per available CPU plus 1 (a 2 CPU host will
+produce 5 workers) with 1 thread per worker. 
+
 Advanced Usage
 ^^^^^^^^^^^^^^
 
