@@ -1,6 +1,19 @@
 Change History
 --------------
 
+2020.10.02
+^^^^^^^^^^^^^^^^^^
+
+Project updated for Python 3.8 with updated dependencies.
+
+Removed RSS feed ``/rss`` (no longer included in latest version of Werkzeug).
+
+Dropped support for installing on macOS, Red Hat, and Ubuntu.
+
+Updated Dockerfile to build slim Python 3.8 image (the new image is ~198MB in size).
+Docker will be the only supported method of running Patch Server going forward. Patch
+Server remains a Flask application so manual installs can still be performed.
+
 0.8.3 (2018-07-18)
 ^^^^^^^^^^^^^^^^^^
 
