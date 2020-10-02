@@ -1,8 +1,11 @@
-Running as a Docker Container
------------------------------
+Docker
+------
 
-In the ``installation/docker/`` directory of the project repository is a
-``Dockerfile`` that can be used to launch the patch server as a container.
+Build Image
+^^^^^^^^^^^
+
+In the ``docker`` directory of the project repository is a ``Dockerfile`` that can be
+used to launch the patch server as a container.
 
 Clone the project repository to your computer. Create the Docker image with:
 
@@ -11,7 +14,10 @@ Clone the project repository to your computer. Create the Docker image with:
     $ cd /path/to/PatchServer
     $ docker build --tag patchserver:latest -f installation/docker/Dockerfile .
 
-If you have Docker installed, you can run the image with:
+Run Container
+^^^^^^^^^^^^^
+
+Run a container with the following command:
 
 .. code-block:: bash
 
@@ -35,3 +41,13 @@ If you have Docker installed, you can run the image with:
 You will be able to access the application using the IP address of the host
 (your computer's IP address when running Docker locally) at port ``5000``.
 
+Performance
+^^^^^^^^^^^
+
+The application, by default, runs 2 worker per available CPU plus 1 (a 2 CPU host will
+produce 5 workers) with 1 thread per worker. 
+
+Advanced Usage
+^^^^^^^^^^^^^^
+
+Coming soon.

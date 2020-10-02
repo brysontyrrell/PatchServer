@@ -27,16 +27,16 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-        if app.config.get('RESET_API_TOKEN'):
+        if app.config.get("RESET_API_TOKEN"):
             reset_api_token()
 
-    if app.config.get('SQL_LOGGING'):
-        sql_logger = logging.getLogger('sqlalchemy.engine')
+    if app.config.get("SQL_LOGGING"):
+        sql_logger = logging.getLogger("sqlalchemy.engine")
 
         for handler in app.logger.handlers:
             sql_logger.addHandler(handler)
 
-        if app.config.get('DEBUG'):
+        if app.config.get("DEBUG"):
             sql_logger.setLevel(logging.DEBUG)
 
     register_blueprints(app)

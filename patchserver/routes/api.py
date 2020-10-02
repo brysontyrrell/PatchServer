@@ -1,5 +1,8 @@
 import json
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ModuleNotFoundError:
+    from urllib.parse import urlparse
 
 from flask import (
     blueprints,
