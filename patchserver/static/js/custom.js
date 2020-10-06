@@ -75,8 +75,8 @@ function listSoftwareTitles() {
                 "orderable": false,
                 "data": "id",
                 "render": function ( data, type, row, meta ) {
-                    return '<button class="btn btn-info btn-xs" onclick="window.location.href=\'../jamf/v1/patch/' + data + '\'">' +
-                           '<span class="glyphicon glyphicon-eye-open"></span></button>';
+                    return '<button class="btn btn-info btn-sm" onclick="window.location.href=\'../jamf/v1/patch/' + data + '\'">' +
+                           '<i class="fas fa-eye"></i></button>';
                 }
             },
             { "targets": 2, "orderable": false, "data": "name" },
@@ -87,9 +87,9 @@ function listSoftwareTitles() {
                 "orderable": false,
                 "data": "id",
                 "render": function ( data, type, row, meta ) {
-                    return '<button class="btn btn-success btn-xs" data-toggle="modal" data-target="#titleVersionModal"' +
+                    return '<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#titleVersionModal"' +
                            'onclick="document.getElementById(\'titleVersionModalName\').innerHTML=\'' + data + '\'; document.getElementById(\'titleVersionModalForm\').action=\'/api/v1/title/' + data + '/version?redirect=true\'">' +
-                           '<span class="glyphicon glyphicon-chevron-up"></span></button>';
+                           '<i class="fas fa-chevron-up"></i></button>';
                 }
             },
             { "targets": 6, "data": "lastModified" },
@@ -98,8 +98,8 @@ function listSoftwareTitles() {
                 "orderable": false,
                 "data": "id",
                 "render": function ( data, type, row, meta ) {
-                    return '<button id="' + data + '" class="btn btn-danger btn-xs" onclick="indexDeletePatch(this.id)">' +
-						    '<span class="glyphicon glyphicon-remove"></span></button>';
+                    return '<button id="' + data + '" class="btn btn-danger btn-sm" onclick="indexDeletePatch(this.id)">' +
+						    '<i class="fas fa-times"></i></button>';
                 }
             }
         ]
@@ -189,7 +189,7 @@ function indexDeletePatch(name_id) {
 function indexDeleteWebhook(id) {
     $.ajax({
         type: 'DELETE',
-        url: "../api/v1/webhooks/" + id + '?redirect=true',
+        url: "../api/v1/webhooks/" + id,
         cache: false,
         success: function (data) {
             console.log('SUCCESS');
