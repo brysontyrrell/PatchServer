@@ -1,5 +1,6 @@
 from flask import Flask
 import logging
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from patchserver import config
 from patchserver.database import db
@@ -21,22 +22,26 @@ def register_blueprints(app):
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
+
+    if app.config["ENABLE_PROXY_SUPPORT"]:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1, x_port=1)
+
     db.init_app(app)
 
     # if not os.path.exists(config.DATABASE_PATH):
     with app.app_context():
         db.create_all()
 
-        if app.config.get('RESET_API_TOKEN'):
+        if app.config.get("RESET_API_TOKEN"):
             reset_api_token()
 
-    if app.config.get('SQL_LOGGING'):
-        sql_logger = logging.getLogger('sqlalchemy.engine')
+    if app.config.get("SQL_LOGGING"):
+        sql_logger = logging.getLogger("sqlalchemy.engine")
 
         for handler in app.logger.handlers:
             sql_logger.addHandler(handler)
 
-        if app.config.get('DEBUG'):
+        if app.config.get("DEBUG"):
             sql_logger.setLevel(logging.DEBUG)
 
     register_blueprints(app)

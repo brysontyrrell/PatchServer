@@ -4,10 +4,10 @@ import sqlalchemy
 from patchserver.models import SoftwareTitle
 from patchserver.routes.api_operations import lookup_software_title
 
-blueprint = blueprints.Blueprint('jamf_pro', __name__, url_prefix='/jamf/v1')
+blueprint = blueprints.Blueprint("jamf_pro", __name__, url_prefix="/jamf/v1")
 
 
-@blueprint.route('/software', methods=['GET'])
+@blueprint.route("/software", methods=["GET"])
 def software_titles():
     """Returns all available software titles on server.
 
@@ -66,7 +66,7 @@ def software_titles():
     return jsonify([title.serialize_short for title in titles]), 200
 
 
-@blueprint.route('/software/<name_ids>')
+@blueprint.route("/software/<name_ids>")
 def software_titles_select(name_ids):
     """Returns a selection of software titles on server. The software title IDs
     must be passed as a comma separated string.
@@ -131,14 +131,15 @@ def software_titles_select(name_ids):
 
     """
     # Comma separated list of name IDs
-    name_id_list = name_ids.split(',')
+    name_id_list = name_ids.split(",")
     title_list = SoftwareTitle.query.filter(
-        sqlalchemy.or_(SoftwareTitle.id_name.in_(name_id_list))).all()
+        sqlalchemy.or_(SoftwareTitle.id_name.in_(name_id_list))
+    ).all()
 
     return jsonify([title.serialize_short for title in title_list]), 200
 
 
-@blueprint.route('/patch/<name_id>')
+@blueprint.route("/patch/<name_id>")
 def patch_by_name_id(name_id):
     """Returns a selection of software titles on server. The software title IDs
     must be passed as a comma separated string.
