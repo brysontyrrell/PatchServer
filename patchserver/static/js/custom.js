@@ -74,8 +74,8 @@ function listSoftwareTitles() {
                 "targets": 1,
                 "orderable": false,
                 "data": "id",
-                "render": function ( data, type, row, meta ) {
-                    return '<button class="btn btn-info btn-sm" onclick="window.location.href=\'../jamf/v1/patch/' + data + '\'">' +
+                "render": function ( value, type, row, meta ) {
+                    return '<button class="btn btn-info btn-sm" onclick="window.location.href=\'../jamf/v1/patch/' + value + '\'">' +
                            '<i class="fas fa-eye"></i></button>';
                 }
             },
@@ -86,9 +86,9 @@ function listSoftwareTitles() {
                 "targets": 5,
                 "orderable": false,
                 "data": "id",
-                "render": function ( data, type, row, meta ) {
+                "render": function ( value, type, row, meta ) {
                     return '<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#titleVersionModal"' +
-                           'onclick="document.getElementById(\'titleVersionModalName\').innerHTML=\'' + data + '\'; document.getElementById(\'titleVersionModalForm\').action=\'/api/v1/title/' + data + '/version?redirect=true\'">' +
+                           'onclick="document.getElementById(\'titleVersionModalName\').innerHTML=\'' + value + '\'; document.getElementById(\'titleVersionModalForm\').action=\'/api/v1/title/' + value + '/version\'">' +
                            '<i class="fas fa-chevron-up"></i></button>';
                 }
             },
@@ -97,8 +97,8 @@ function listSoftwareTitles() {
                 "targets": 7,
                 "orderable": false,
                 "data": "id",
-                "render": function ( data, type, row, meta ) {
-                    return '<button id="' + data + '" class="btn btn-danger btn-sm" onclick="indexDeletePatch(this.id)">' +
+                "render": function ( value, type, row, meta ) {
+                    return '<button id="' + value + '" class="btn btn-danger btn-sm" onclick="indexDeletePatch(this.id)">' +
 						    '<i class="fas fa-times"></i></button>';
                 }
             }
@@ -129,9 +129,9 @@ function listWebhooks() {
                 "targets": 4,
                 "orderable": false,
                 "data": "id",
-                "render": function ( data, type, row, meta ) {
-                    return '<button id="' + data + '" class="btn btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
-						    '<span class="glyphicon glyphicon-remove"></span></button>';
+                "render": function ( value, type, row, meta ) {
+                    return '<button id="' + value + '" class="btn btn-danger btn-xs" onclick="indexDeleteWebhook(this.id)">' +
+						    '<span class="glyphicon glyphicon-remove"></button>';
                 }
             }
         ]
@@ -173,15 +173,15 @@ function listWebhooks() {
 function indexDeletePatch(name_id) {
     $.ajax({
         type: 'DELETE',
-        url: "../api/v1/title/" + name_id + '?redirect=true',
+        url: "../api/v1/title/" + name_id,
         cache: false,
         success: function (data) {
-            window.location.href = '../';
+            location.reload();
         },
         error: function (e) {
             console.log("ERROR: ", e);
             console.log("ERROR MSG: ", e.responseText);
-            window.location.href = '../';
+            location.reload();
         }
     });
 }
@@ -193,12 +193,12 @@ function indexDeleteWebhook(id) {
         cache: false,
         success: function (data) {
             console.log('SUCCESS');
-            window.location.href = '../';
+            location.reload();
         },
         error: function (e) {
             console.log("ERROR: ", e);
             console.log("ERROR MSG: ", e.responseText);
-            window.location.href = '../';
+            location.reload();
         }
     });
 }

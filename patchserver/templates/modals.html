@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <h3>Upload the Patch Definition</h3>
             </div>
-            <form method="post" action="/api/v1/title?redirect=true" enctype="multipart/form-data">
+            <form method="post" action="/api/v1/title" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="form-group">
                         <input type="file" class="filestyle" name="file" accept="application/json" data-buttonText="&ensp;Choose File" required/>
@@ -46,21 +46,21 @@
             <div class="modal-header">
                 <h3>Configure a New Webhook</h3>
             </div>
-            <form method="post" action="/api/v1/webhooks?redirect=true">
+            <form method="post" action="/api/v1/webhooks">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="url">URL:</label>
                         <input type="text" class="form-control" id="url" name="url">
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" value="1" name="enabled" checked>Enable</label>
+                        <label><input type="checkbox" value="1" name="enabled" checked> Enable</label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" value="1" name="verify_ssl" checked>Verify SSL</label>
+                        <label><input type="checkbox" value="1" name="verify_ssl" checked> Verify SSL</label>
                     </div>
                     <p><i>Enabling "Send Definition" will include the entire patch definition for the software title that triggered the event (this may increase API request times).</i></p>
                     <div class="checkbox">
-                        <label><input type="checkbox" value="1" name="send_definition">Send Definition</label>
+                        <label><input type="checkbox" value="1" name="send_definition"> Send Definition</label>
                     </div>
                 </div>
                 <div class="modal-footer">
