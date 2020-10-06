@@ -1,6 +1,6 @@
 # Local Testing
 
-> :warning: Though you can run the application locally using `run.py` it is **strongly** recommended you perform testing with Docker (use the same image you would deploy in production). See the [Docker setup documentation](docker.md) to learn more.
+> :warning:  Though you can run the application locally using `run.py` it is **strongly** recommended you perform testing with Docker (use the same image you would deploy in production). See the [Docker setup documentation](docker.md) to learn more.
 
 Clone the project repository to the system that will run the application.
 

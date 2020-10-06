@@ -1,7 +1,6 @@
 # Troubleshooting
 
-If you encounter issues between Jamf Pro and your Patch Server you can
-investigate using the resources detailed here.
+If you encounter issues between Jamf Pro and your Patch Server you can investigate using the resources detailed here.
 
 ## Jamf Pro Connection Test
 

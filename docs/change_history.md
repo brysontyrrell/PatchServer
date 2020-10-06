@@ -1,5 +1,9 @@
 # Change History
 
+## 2020.10.05
+
+Proxy support added. Can be toggled using the `ENABLE_PROXY_SUPPORT` environment variable. See [Docker Usage](setup/docker.md) for more details.
+
 ## 2020.10.02
 
 Project updated for Python 3.8 with updated dependencies.
@@ -111,7 +115,7 @@ Organized code. JSON validation for API. Really big documentation update (now ho
 
 Added `GET /api/v1/backup`. Download a zipped archive of all patch definitions on the server. Version history notes.
 
-> :information_source: Removed most of the UI and some API endpoints no longer required without the associated UI views.
+> :information_source:  Removed most of the UI and some API endpoints no longer required without the associated UI views.
 
 ## 0.4.3 (2018-02-01)
 

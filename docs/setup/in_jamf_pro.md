@@ -2,7 +2,7 @@
 
 Configure the Patch Server as an External Patch Source in Jamf Pro.
 
-> :information_source: External Patch Sources is a feature of Jamf Pro v10.2+.
+> :information_source:  External Patch Sources is a feature of Jamf Pro v10.2+.
 
 To add your Patch Server as a **Patch External Source** in Jamf Pro, go to **Settings > Computer Management > Patch Management** in the management console.
 
@@ -16,7 +16,7 @@ Click the **+ New** button next to **Patch External Source**. On the next screen
 
 In the **PORT** field enter `5000` (or alternatively, the the port you configured during setup).
 
-> :information_source: Only check the **Use SSL** box if you have configured a TLS certificate and are serving traffic over HTTPS from your Patch Server. If you are using HTTP leave this box unchecked.
+> :information_source:  Only check the **Use SSL** box if you have configured a TLS certificate and are serving traffic over HTTPS from your Patch Server. If you are using HTTP leave this box unchecked.
 
 ![](../images/jamf_setup_02.png)
 

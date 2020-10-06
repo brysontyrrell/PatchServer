@@ -47,13 +47,13 @@ There are additional actions available for each software title.
 
 ![](../images/gui_08_actions.png)
 
-> :warning: The delete action cannot be undone.
+> :warning:  The delete action cannot be undone.
 
 ## Backup Patch Definitions
 
 Click the **Backup** button and you will download a zipped archive of all patch
 definitions for all your software titles.
 
-> :information_source: This is a feature of the API that you can use with automation for scheduled backups of the server.
+> :information_source:  This is a feature of the API that you can use with automation for scheduled backups of the server.
 
 ![](../images/gui_09_backups.png)
