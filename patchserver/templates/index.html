@@ -7,24 +7,25 @@
         <div class="jumbotron" style="padding: 1rem; margin-bottom: 1rem; margin-top: 1rem;">
             <h2>
                 Patch Server
-                <a class="btn btn-info btn-sm pull-right" href="http://patchserver.readthedocs.io/en/latest/" target="_blank" role="button">
-                    Docs <span class="glyphicon glyphicon-book"></span></a>
+                <a class="btn btn-info float-right" href="https://github.com/brysontyrrell/PatchServer/blob/master/README.md" target="_blank" role="button">
+                    Docs &nbsp;<i class="fas fa-book-reader"></i></a>
             </h2>
         </div>
 
         <div class="col-md-12 main">
-
-            <h3>
-                Software Titles
-                <div class="pull-right">
-                    <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTitleModal">
-                        New Title <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                    <button class="btn btn-success btn-xs" onclick="window.location.href='../api/v1/backup'">
-                        Backup <span class="glyphicon glyphicon glyphicon-download"></span>
-                    </button>
-                </div>
-            </h3>
+            <div style="margin-bottom: 1rem; margin-top: 1rem;">
+                <h3>
+                    Software Titles
+                    <div class="float-right">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#newTitleModal">
+                            New Title &nbsp;<i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-success" onclick="window.location.href='../api/v1/backup'">
+                            Backup &nbsp;<i class="fas fa-file-download"></i>
+                        </button>
+                    </div>
+                </h3>
+            </div>
 
 
             <table class="table table-striped" id="patch-list">
@@ -49,14 +50,16 @@
 
         <div class="col-md-12 main">
 
-            <h3>
-                Webhooks
-                <div class="pull-right">
-                    <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newWebhookModal">
-                        New Webhook <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                </div>
-            </h3>
+            <div style="margin-bottom: 1rem; margin-top: 1rem;">
+                <h3>
+                    Webhooks
+                    <div class="float-right">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#newWebhookModal">
+                            New Webhook <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </h3>
+            </div>
 
             <table class="table table-striped" id="webhook-list">
                 <thead>

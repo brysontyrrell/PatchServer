@@ -16,7 +16,7 @@ blueprint = blueprints.Blueprint("error_handlers", __name__)
 def unauthorized(err):
     current_app.logger.error(err.message)
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "Unauthorized", "message": err.message}, "warning")
         return redirect(url_for("web_ui.index"))
     else:
@@ -27,7 +27,7 @@ def unauthorized(err):
 def error_invalid_patch_definition(err):
     current_app.logger.error(err.message)
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash(
             {"title": "Invalid Patch Definition JSON", "message": err.message},
             "warning",
@@ -41,7 +41,7 @@ def error_invalid_patch_definition(err):
 def error_invalid_webhook(err):
     current_app.logger.error(err.message)
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "Invalid Webhook", "message": err.message}, "warning")
         return redirect(url_for("web_ui.index"))
     else:
@@ -51,7 +51,7 @@ def error_invalid_webhook(err):
 @blueprint.app_errorhandler(SoftwareTitleNotFound)
 def error_title_not_found(err):
     current_app.logger.error(err)
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "Software title not found", "message": err.message}, "warning")
         return redirect(url_for("web_ui.index"))
     else:
@@ -60,23 +60,23 @@ def error_title_not_found(err):
 
 @blueprint.app_errorhandler(IntegrityError)
 def database_integrity_error(err):
-    if "software_titles.id_name" in err.message:
-        message = "A software title of the given name already exists."
-    else:
-        message = err.message
+    current_app.logger.exception(str(err.__dict__))
+    message = (
+        "Unable to write title to the database. A title of the given name may already."
+    )
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "There was a conflict", "message": message}, "danger")
         return redirect(url_for("web_ui.index"))
     else:
-        return jsonify({"database_conflict": message}), 409
+        return jsonify({"message": message}), 409
 
 
 @blueprint.app_errorhandler(PatchArchiveRestoreFailure)
 def archive_restore_failure(err):
     current_app.logger.error(err.message)
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash(
             {"title": "Unable to Restore Patch Archive", "message": err.message},
             "warning",

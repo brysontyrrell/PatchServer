@@ -16,6 +16,9 @@
     <script src="../static/js/jquery.dataTables.min.js"></script>
     <link href="../static/css/jquery.dataTables.min.css" rel="stylesheet">
 
+    <!-- FontAwesome -->
+    <script src="../static/js/fontawesome/all.min.js"></script>
+
     <!--Custom-->
     <script src="../static/js/custom.js"></script>
     <link href="../static/css/custom.css" rel="stylesheet">
@@ -45,11 +48,11 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissable alert-abs fade in">
+                <div class="alert alert-{{ category }} alert-dismissable fade show" role="alert">
+                    <strong>{{ message['title'] }}:</strong> {{ message['message']|safe }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <strong>{{ message['title'] }}:</strong> {{ message['message']|safe }}
                 </div>
             {% endfor %}
         {% endif %}

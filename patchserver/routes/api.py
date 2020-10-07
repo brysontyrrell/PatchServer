@@ -191,7 +191,7 @@ def title_create():
     g.event_type = "new_title"
     g.event = new_title.serialize
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash(
             {
                 "title": "Software title created",
@@ -251,11 +251,10 @@ def title_delete(name_id):
     db.session.delete(title)
     db.session.commit()
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "Software title deleted", "message": name_id}, "success")
-        return redirect(url_for("web_ui.index"))
-    else:
-        return jsonify({}), 204
+
+    return jsonify({}), 204
 
 
 @blueprint.route("/title/<name_id>/version", methods=["POST"])
@@ -352,7 +351,7 @@ def title_versions(name_id):
     create_patch_objects([data], software_title=title)
     db.session.commit()
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash(
             {
                 "title": "Software title version updated",
@@ -514,7 +513,7 @@ def webhooks():
         db.session.add(new_webhook)
         db.session.commit()
 
-        if request.args.get("redirect"):
+        if request.user_agent.browser:
             flash(
                 {
                     "title": "Webhook saved",
@@ -572,8 +571,7 @@ def webhooks_delete(webhook_id):
     db.session.delete(webhook)
     db.session.commit()
 
-    if request.args.get("redirect"):
+    if request.user_agent.browser:
         flash({"title": "Webhook deleted", "message": webhook_url}, "success")
-        return redirect(url_for("web_ui.index"))
-    else:
-        return jsonify({}), 204
+
+    return jsonify({}), 204
