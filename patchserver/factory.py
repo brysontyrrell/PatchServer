@@ -1,5 +1,6 @@
 from flask import Flask
 import logging
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from patchserver import config
 from patchserver.database import db
@@ -21,6 +22,10 @@ def register_blueprints(app):
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
+
+    if app.config["ENABLE_PROXY_SUPPORT"]:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1, x_port=1)
+
     db.init_app(app)
 
     # if not os.path.exists(config.DATABASE_PATH):

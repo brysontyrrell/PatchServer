@@ -1,19 +1,7 @@
 import json
-try:
-    from urlparse import urlparse
-except ModuleNotFoundError:
-    from urllib.parse import urlparse
+from urllib.parse import urlparse
 
-from flask import (
-    blueprints,
-    flash,
-    g,
-    jsonify,
-    redirect,
-    request,
-    send_file,
-    url_for
-)
+from flask import blueprints, flash, g, jsonify, redirect, request, send_file, url_for
 
 from patchserver.database import db
 from patchserver.exc import InvalidPatchDefinitionError, InvalidWebhook
@@ -24,16 +12,16 @@ from patchserver.routes.api_operations import (
     create_patch_objects,
     lookup_software_title,
     create_backup_archive,
-    restore_backup_archive
+    restore_backup_archive,
 )
 from patchserver.routes.auth import api_auth
 from patchserver.routes.validator import validate_json
 from patchserver.routes.webhooks import webhook_event
 
-blueprint = blueprints.Blueprint('api', __name__, url_prefix='/api/v1')
+blueprint = blueprints.Blueprint("api", __name__, url_prefix="/api/v1")
 
 
-@blueprint.route('/token', methods=['POST'])
+@blueprint.route("/token", methods=["POST"])
 def token_create():
     """Create an API token for the server.
 
@@ -74,17 +62,16 @@ def token_create():
     :return:
     """
     if ApiToken.query.first():
-        return jsonify(
-            {'forbidden': 'A token already exists for this server'}), 403
+        return jsonify({"forbidden": "A token already exists for this server"}), 403
 
     new_token = ApiToken()
     db.session.add(new_token)
     db.session.commit()
 
-    return jsonify({'token_created': new_token.token}), 201
+    return jsonify({"token_created": new_token.token}), 201
 
 
-@blueprint.route('/title', methods=['POST'])
+@blueprint.route("/title", methods=["POST"])
 @api_auth
 @webhook_event
 def title_create():
@@ -175,54 +162,51 @@ def title_create():
     data = request.get_json()
     if not data:
         try:
-            data = json.load(request.files['file'])
+            data = json.load(request.files["file"])
         except ValueError:
-            raise InvalidPatchDefinitionError('No JSON data could be found.')
+            raise InvalidPatchDefinitionError("No JSON data could be found.")
 
-    validate_json(data, 'patch')
+    validate_json(data, "patch")
 
     new_title = SoftwareTitle(
-        id_name=data['id'],
-        name=data['name'],
-        publisher=data['publisher'],
-        app_name=data['appName'],
-        bundle_id=data['bundleId']
+        id_name=data["id"],
+        name=data["name"],
+        publisher=data["publisher"],
+        app_name=data["appName"],
+        bundle_id=data["bundleId"],
     )
     db.session.add(new_title)
 
-    if data.get('requirements'):
-        create_criteria_objects(
-            data['requirements'], software_title=new_title)
+    if data.get("requirements"):
+        create_criteria_objects(data["requirements"], software_title=new_title)
 
-    if data.get('patches'):
-        create_patch_objects(
-            list(reversed(data['patches'])), software_title=new_title)
+    if data.get("patches"):
+        create_patch_objects(list(reversed(data["patches"])), software_title=new_title)
 
-    if data.get('extensionAttributes'):
-        create_extension_attributes(
-            data['extensionAttributes'], new_title)
+    if data.get("extensionAttributes"):
+        create_extension_attributes(data["extensionAttributes"], new_title)
 
     db.session.commit()
 
-    g.event_type = 'new_title'
+    g.event_type = "new_title"
     g.event = new_title.serialize
 
-    if request.args.get('redirect'):
+    if request.args.get("redirect"):
         flash(
             {
-                'title': 'Software title created',
-                'message': 'View at <a href="{0}">{0}</a>'.format(
-                    url_for('jamf_pro.patch_by_name_id',
-                            name_id=new_title.id_name))
+                "title": "Software title created",
+                "message": 'View at <a href="{0}">{0}</a>'.format(
+                    url_for("jamf_pro.patch_by_name_id", name_id=new_title.id_name)
+                ),
             },
-            'success')
-        return redirect(url_for('web_ui.index'))
+            "success",
+        )
+        return redirect(url_for("web_ui.index"))
     else:
-        return jsonify(
-            {'id': new_title.id_name, 'database_id': new_title.id}), 201
+        return jsonify({"id": new_title.id_name, "database_id": new_title.id}), 201
 
 
-@blueprint.route('/title/<name_id>', methods=['DELETE'])
+@blueprint.route("/title/<name_id>", methods=["DELETE"])
 @api_auth
 @webhook_event
 def title_delete(name_id):
@@ -261,25 +245,20 @@ def title_delete(name_id):
     """
     title = lookup_software_title(name_id)
 
-    g.event_type = 'title_deleted'
+    g.event_type = "title_deleted"
     g.event = title.serialize
 
     db.session.delete(title)
     db.session.commit()
 
-    if request.args.get('redirect'):
-        flash(
-            {
-                'title': 'Software title deleted',
-                'message': name_id
-            },
-            'success')
-        return redirect(url_for('web_ui.index'))
+    if request.args.get("redirect"):
+        flash({"title": "Software title deleted", "message": name_id}, "success")
+        return redirect(url_for("web_ui.index"))
     else:
         return jsonify({}), 204
 
 
-@blueprint.route('/title/<name_id>/version', methods=['POST'])
+@blueprint.route("/title/<name_id>/version", methods=["POST"])
 @api_auth
 def title_versions(name_id):
     """Create a new patch version for an existing patch definition.
@@ -352,36 +331,43 @@ def title_versions(name_id):
     data = request.get_json()
     if not data:
         try:
-            data = json.load(request.files['file'])
+            data = json.load(request.files["file"])
         except ValueError:
-            raise InvalidPatchDefinitionError('No JSON data could be found.')
+            raise InvalidPatchDefinitionError("No JSON data could be found.")
 
-    validate_json(data, 'version')
+    validate_json(data, "version")
 
     title = lookup_software_title(name_id)
-    if data['version'] in [patch.version for patch in title.patches]:
-        return jsonify(
-            {'database_conflict': 'The provided version already exists '
-                                  'for this software title.'}
-        ), 409
+    if data["version"] in [patch.version for patch in title.patches]:
+        return (
+            jsonify(
+                {
+                    "database_conflict": "The provided version already exists "
+                    "for this software title."
+                }
+            ),
+            409,
+        )
 
     create_patch_objects([data], software_title=title)
     db.session.commit()
 
-    if request.args.get('redirect'):
+    if request.args.get("redirect"):
         flash(
             {
-                'title': 'Software title version updated',
-                'message': 'View at <a href="{0}">{0}</a>'.format(
-                    url_for('jamf_pro.patch_by_name_id', name_id=name_id))
+                "title": "Software title version updated",
+                "message": 'View at <a href="{0}">{0}</a>'.format(
+                    url_for("jamf_pro.patch_by_name_id", name_id=name_id)
+                ),
             },
-            'success')
-        return redirect(url_for('web_ui.index'))
+            "success",
+        )
+        return redirect(url_for("web_ui.index"))
     else:
         return jsonify({}), 201
 
 
-@blueprint.route('/backup')
+@blueprint.route("/backup")
 def backup_titles():
     """Download a zipped archive of all patch definitions.
 
@@ -407,12 +393,13 @@ def backup_titles():
 
     """
     archive = create_backup_archive()
-    return send_file(
-        archive, as_attachment=True, attachment_filename='patch_archive.zip'
-    ), 200
+    return (
+        send_file(archive, as_attachment=True, attachment_filename="patch_archive.zip"),
+        200,
+    )
 
 
-@blueprint.route('/restore', methods=['POST'])
+@blueprint.route("/restore", methods=["POST"])
 def restore_titles():
     """Restore a zipped archive of definitions to the server. This endpoint
     may only be used when no definitions exist. If definitions have been created
@@ -485,28 +472,28 @@ def restore_titles():
         }
 
     """
-    uploaded_file = request.files['file']
+    uploaded_file = request.files["file"]
     restored_definitions = restore_backup_archive(uploaded_file)
     return jsonify(restored_definitions), 201
 
 
-@blueprint.route('/webhooks', methods=['GET', 'POST'])
+@blueprint.route("/webhooks", methods=["GET", "POST"])
 @api_auth
 def webhooks():
-    if request.method == 'GET':
+    if request.method == "GET":
         results = list()
         for webhook in WebhookUrls.query.all():
             results.append(webhook.serialize)
 
         return jsonify(results), 200
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         data = request.get_json()
         if not data:
             data = {
-                'url': request.form.get('url', ''),
-                'enabled': bool(request.form.get('enabled')),
-                'send_definition': bool(request.form.get('send_definition'))
+                "url": request.form.get("url", ""),
+                "enabled": bool(request.form.get("enabled")),
+                "send_definition": bool(request.form.get("send_definition")),
             }
 
         def validate_url(url):
@@ -516,30 +503,31 @@ def webhooks():
             else:
                 return False
 
-        if not validate_url(data['url']):
-            raise InvalidWebhook('The provided URL is invalid')
+        if not validate_url(data["url"]):
+            raise InvalidWebhook("The provided URL is invalid")
 
         new_webhook = WebhookUrls(
-            url=data['url'],
-            enabled=data['enabled'],
-            send_definition=data['send_definition']
+            url=data["url"],
+            enabled=data["enabled"],
+            send_definition=data["send_definition"],
         )
         db.session.add(new_webhook)
         db.session.commit()
 
-        if request.args.get('redirect'):
+        if request.args.get("redirect"):
             flash(
                 {
-                    'title': 'Webhook saved',
-                    'message': 'The new webhook has been saved.'
+                    "title": "Webhook saved",
+                    "message": "The new webhook has been saved.",
                 },
-                'success')
-            return redirect(url_for('web_ui.index'))
+                "success",
+            )
+            return redirect(url_for("web_ui.index"))
         else:
-            return jsonify({'id': new_webhook.id}), 201
+            return jsonify({"id": new_webhook.id}), 201
 
 
-@blueprint.route('/webhooks/<webhook_id>', methods=['DELETE'])
+@blueprint.route("/webhooks/<webhook_id>", methods=["DELETE"])
 @api_auth
 def webhooks_delete(webhook_id):
     """Delete a configured webhook from the server by ID.
@@ -576,21 +564,16 @@ def webhooks_delete(webhook_id):
     """
     webhook = WebhookUrls.query.filter_by(id=webhook_id).first()
     if not webhook:
-        flash({'title': 'Not found!', 'message': ''}, 'error')
-        return redirect(url_for('web_ui.index'))
+        flash({"title": "Not found!", "message": ""}, "error")
+        return redirect(url_for("web_ui.index"))
 
     webhook_url = webhook.url
 
     db.session.delete(webhook)
     db.session.commit()
 
-    if request.args.get('redirect'):
-        flash(
-            {
-                'title': 'Webhook deleted',
-                'message': webhook_url
-            },
-            'success')
-        return redirect(url_for('web_ui.index'))
+    if request.args.get("redirect"):
+        flash({"title": "Webhook deleted", "message": webhook_url}, "success")
+        return redirect(url_for("web_ui.index"))
     else:
         return jsonify({}), 204
